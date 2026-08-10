@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Vivekananda Concept School"
+description = "A responsive school website inspired by the provided reference, introducing Vivekananda Concept School, its learning approach, campus life, admissions, and community."
+version = "1.0.0"
+id = "artifacts/vivekananda-concept-school"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22391
+
+[services.development]
+run = "pnpm --filter @workspace/vivekananda-concept-school run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/vivekananda-concept-school", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/vivekananda-concept-school/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22391"
+BASE_PATH = "/"
