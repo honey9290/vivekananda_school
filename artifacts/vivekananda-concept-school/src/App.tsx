@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ArrowLeft, ArrowRight, BookOpen, Bus, Check, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Send, Trophy, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -34,18 +34,73 @@ const WALLPAPER_ICONS = [
   { file: 'icon-24.png', leftPct: 5.24, topPct: 90.987, widthPct: 8.361 },
 ] as const;
 
+const CENTER_ICONS = [
+  { file: 'icon-01.png', leftPct: 38, topPct: 16, widthPct: 3.6 },
+  { file: 'icon-07.png', leftPct: 58, topPct: 28, widthPct: 3.6 },
+  { file: 'icon-09.png', leftPct: 44, topPct: 42, widthPct: 3.2 },
+  { file: 'icon-13.png', leftPct: 62, topPct: 55, widthPct: 3.6 },
+  { file: 'icon-17.png', leftPct: 36, topPct: 68, widthPct: 3.6 },
+  { file: 'icon-22.png', leftPct: 56, topPct: 80, widthPct: 3.6 },
+] as const;
+
+const ALL_TILE_ICONS = [...WALLPAPER_ICONS, ...CENTER_ICONS];
+
 const FLOAT_VARIANTS = ['wallpaper-icon-float-a', 'wallpaper-icon-float-b', 'wallpaper-icon-float-c'];
 
 function WallpaperTile() {
   return <div className="relative mx-auto w-[90%]" style={{ aspectRatio: `${WALLPAPER_TILE.width} / ${WALLPAPER_TILE.height}` }}>
-    {WALLPAPER_ICONS.map((icon, index) => <div key={icon.file} className="wallpaper-icon-depth pointer-events-auto absolute z-20" style={{ left: `${icon.leftPct}%`, top: `${icon.topPct}%`, width: `${icon.widthPct}%` }}>
-      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 0.83) % 6).toFixed(2)}s`, animationDuration: `${(5 + (index % 6) * 1.1).toFixed(2)}s` }} />
+    {ALL_TILE_ICONS.map((icon, index) => <div key={`${icon.file}-${icon.leftPct}-${icon.topPct}`} className="wallpaper-icon-depth absolute" style={{ left: `${icon.leftPct}%`, top: `${icon.topPct}%`, width: `${icon.widthPct}%` }}>
+      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
     </div>)}
   </div>;
 }
 
 function WallpaperLayer() {
-  return <div className="pointer-events-none absolute inset-0 overflow-hidden">
+  const layerRef = useRef<HTMLDivElement>(null);
+  const iconsRef = useRef<{ el: HTMLDivElement; cx: number; cy: number }[]>([]);
+  useEffect(() => {
+    const container = layerRef.current; if (!container) return;
+    const REPEL_RADIUS = 130;
+    const REPEL_STRENGTH = 42;
+    let measureQueued = false;
+    const measure = () => {
+      measureQueued = false;
+      iconsRef.current = Array.from(container.querySelectorAll<HTMLDivElement>('.wallpaper-icon-depth')).map((el) => {
+        const r = el.getBoundingClientRect();
+        return { el, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+      });
+    };
+    const queueMeasure = () => { if (!measureQueued) { measureQueued = true; requestAnimationFrame(measure); } };
+    queueMeasure();
+    let moveQueued = false;
+    const onMove = (event: MouseEvent) => {
+      if (moveQueued) return; moveQueued = true;
+      requestAnimationFrame(() => {
+        moveQueued = false;
+        for (const { el, cx, cy } of iconsRef.current) {
+          const dx = cx - event.clientX; const dy = cy - event.clientY;
+          const dist = Math.hypot(dx, dy);
+          if (dist < REPEL_RADIUS && dist > 0.01) {
+            const force = 1 - dist / REPEL_RADIUS;
+            el.style.setProperty('--repel-x', `${((dx / dist) * REPEL_STRENGTH * force).toFixed(1)}px`);
+            el.style.setProperty('--repel-y', `${((dy / dist) * REPEL_STRENGTH * force).toFixed(1)}px`);
+          } else {
+            el.style.setProperty('--repel-x', '0px');
+            el.style.setProperty('--repel-y', '0px');
+          }
+        }
+      });
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('resize', queueMeasure);
+    window.addEventListener('scroll', queueMeasure, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('resize', queueMeasure);
+      window.removeEventListener('scroll', queueMeasure);
+    };
+  }, []);
+  return <div ref={layerRef} className="pointer-events-none absolute inset-0 overflow-hidden">
     <div className="flex flex-col">
       {Array.from({ length: 16 }, (_, index) => <WallpaperTile key={index} />)}
     </div>
@@ -130,9 +185,9 @@ function Heading({ title, accent }: { title: string; accent?: string }) {
 }
 
 function Intro() {
-  return <section id="about" className="relative overflow-hidden py-14 md:py-20"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#8E140E] opacity-70" /><div className="container-wide grid gap-10 md:grid-cols-[1fr_1fr] md:items-center">
-    <div className="reveal"><h2 className="section-heading text-[clamp(1.9rem,3.3vw,2.5rem)]">Welcome to Vivekananda <em>Concept School</em></h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div><p className="mt-6 max-w-[470px] text-[17px] leading-6 text-[#1F2838]">Welcome to Vivekananda Concept School! Igniting minds, shaping futures. Join us for academic excellence, character building, and holistic development.</p></div>
-    <div className="reveal relative mx-auto w-full max-w-[430px] border-[8px] border-[#FFFFFF] bg-[#1F2838] shadow-sm"><div className="relative aspect-video overflow-hidden"><video src="/our-story.mp4" poster="/making-lab.jpg" controls className="h-full w-full object-cover" data-testid="video-our-story" /><span className="pointer-events-none absolute bottom-0 left-0 right-0 bg-black/65 px-3 py-2 text-[14px] font-semibold text-white">Vivekananda Concept School — Our story</span></div></div>
+  return <section id="about" className="relative overflow-hidden py-10 md:py-14"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#8E140E] opacity-70" /><div className="container-wide grid gap-10 md:grid-cols-[1fr_1fr] md:items-center">
+    <div className="reveal"><h2 className="section-heading text-[clamp(1.9rem,3.3vw,2.5rem)]">Welcome to Vivekananda <em>Concept School</em></h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div><p className="mt-6 max-w-[470px] text-[17px] leading-6 text-[#1F2838]">Welcome to Vivekananda Concept School! Igniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
+    <div className="reveal relative mx-auto w-full max-w-[300px] border-[8px] border-[#FFFFFF] bg-[#1F2838] shadow-sm"><div className="relative aspect-[9/16] overflow-hidden"><video src="/our-story.mp4" poster="/our-story-poster.jpg" controls className="h-full w-full object-cover" data-testid="video-our-story" /></div></div>
   </div></section>;
 }
 
@@ -149,7 +204,7 @@ const resultImages = [
   { src: '/results-3.jpeg', caption: 'More Achievers — SSC Results 2026' },
 ];
 function Results() {
-  return <section id="results" className="relative py-14 md:py-20"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[520px] text-center text-[17px] leading-6 text-[#1F2838]">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-10 grid max-w-[900px] gap-6 sm:grid-cols-2 lg:grid-cols-3">{resultImages.map((item, index) => <a key={item.src} href={item.src} target="_blank" rel="noreferrer" className="reveal school-card block overflow-hidden rounded border border-[#1F2838] bg-white shadow-[0_2px_5px_rgba(31,40,56,.18)]" data-testid={`card-result-${index + 1}`}><img src={item.src} alt={item.caption} className="h-auto w-full object-cover" /><p className="px-3 py-3 text-center text-[16px] font-semibold text-[#8E140E]">{item.caption}</p></a>)}</div></div></section>;
+  return <section id="results" className="relative py-14 md:py-20"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-5 max-w-[620px] text-center text-[18px] leading-7 text-[#1F2838]">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-14 grid max-w-[1150px] gap-8 sm:grid-cols-2 lg:grid-cols-3">{resultImages.map((item, index) => <a key={item.src} href={item.src} target="_blank" rel="noreferrer" className="reveal school-card block overflow-hidden rounded border border-[#1F2838] bg-white shadow-[0_2px_5px_rgba(31,40,56,.18)]" data-testid={`card-result-${index + 1}`}><img src={item.src} alt={item.caption} className="h-auto w-full object-cover" /><p className="px-4 py-4 text-center text-[18px] font-semibold text-[#8E140E]">{item.caption}</p></a>)}</div></div></section>;
 }
 
 const facilities = [
@@ -159,12 +214,12 @@ const facilities = [
   [Trophy, 'IIT-JEE and NEET Foundation', 'Early foundation coaching that builds problem-solving skills for competitive exams from school itself. Experienced faculty blend board preparation with entrance-exam thinking.'],
 ] as const;
 function Facilities() {
-  return <section id="media" className="py-20 md:py-28"><div className="container-wide"><Heading title="Our" accent="Facilities" /><div className="mx-auto mt-14 grid max-w-[880px] grid-cols-1 gap-x-14 gap-y-16 sm:grid-cols-2">{facilities.map(([Icon, title, copy], index) => <article key={title} className="reveal flex flex-col items-center text-center" data-testid={`card-facility-${index + 1}`}><span className={`facility-circle grid h-32 w-32 place-items-center rounded-full ${index % 2 === 0 ? 'text-[#8E140E]' : 'text-[#1F2838]'}`}><Icon size={54} /></span><h3 className="mt-5 font-sans text-[24px] font-medium text-[#1F2838]">{title}</h3><p className="mt-3 max-w-[320px] text-[16px] leading-6 text-[#1F2838]/75">{copy}</p></article>)}</div></div></section>;
+  return <section id="media" className="py-14 md:py-20"><div className="container-wide"><Heading title="Our" accent="Facilities" /><div className="mx-auto mt-14 grid max-w-[880px] grid-cols-1 gap-x-14 gap-y-16 sm:grid-cols-2">{facilities.map(([Icon, title, copy], index) => <article key={title} className="reveal flex flex-col items-center text-center" data-testid={`card-facility-${index + 1}`}><span className={`facility-circle grid h-32 w-32 place-items-center rounded-full ${index % 2 === 0 ? 'text-[#8E140E]' : 'text-[#1F2838]'}`}><Icon size={54} /></span><h3 className="mt-5 font-sans text-[24px] font-medium text-[#1F2838]">{title}</h3><p className="mt-3 max-w-[320px] text-[16px] leading-6 text-[#1F2838]/75">{copy}</p></article>)}</div></div></section>;
 }
 
 const gallery = ['/making-lab.jpg', '/campus-courtyard.jpg', '/athletics-field.jpg', '/campus-courtyard.jpg', '/making-lab.jpg', '/athletics-field.jpg'];
 function Gallery() {
-  return <section id="gallery" className="relative overflow-hidden py-14 md:py-20"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><div className="container-wide"><Heading title="PHOTO" accent="GALLERY" /><div className="mx-auto mt-10 grid max-w-[740px] grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3">{gallery.map((src, index) => <button key={`${src}-${index}`} className="gallery-blob group relative aspect-[1.18] overflow-hidden bg-[#FFFFFF]" onClick={() => window.open(src, '_blank')} data-testid={`button-gallery-${index + 1}`}><img src={src} alt={`School life gallery ${index + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /><span className="absolute inset-0 bg-[#8E140E]/0 transition-colors group-hover:bg-[#8E140E]/20" /></button>)}</div></div></section>;
+  return <section id="gallery" className="relative overflow-hidden py-10 md:py-14"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><div className="container-wide"><Heading title="PHOTO" accent="GALLERY" /><div className="mx-auto mt-10 grid max-w-[740px] grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3">{gallery.map((src, index) => <button key={`${src}-${index}`} className="gallery-blob group relative aspect-[1.18] overflow-hidden bg-[#FFFFFF]" onClick={() => window.open(src, '_blank')} data-testid={`button-gallery-${index + 1}`}><img src={src} alt={`School life gallery ${index + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /><span className="absolute inset-0 bg-[#8E140E]/0 transition-colors group-hover:bg-[#8E140E]/20" /></button>)}</div></div></section>;
 }
 
 function Testimonials() {
@@ -173,11 +228,11 @@ function Testimonials() {
     { quote: 'The teachers at Vivekananda Concept School are very loving and nurturing while providing the guidance and structure my kids need. I have been impressed with the dedication of the staff. Truly impressed.', name: 'Sai Chandrika' },
   ];
   const [active, setActive] = useState(0); const testimonial = testimonials[active];
-  return <section id="blogs" className="py-14 md:py-20"><div className="container-wide"><Heading title="Parent Say" accent="About us" /><div className="relative mx-auto mt-8 max-w-[760px] px-10 text-center sm:px-14"><Quote className="absolute left-0 top-0 text-[#8E140E]" fill="currentColor" size={40} /><Quote className="absolute right-0 top-0 rotate-180 text-[#8E140E]" fill="currentColor" size={40} /><blockquote className="whitespace-pre-line text-[16px] leading-[1.55] text-[#1F2838]" data-testid="text-testimonial">{testimonial.quote}</blockquote><p className="mt-5 text-right text-[18px] font-semibold text-[#8E140E]" data-testid="text-testimonial-name">{testimonial.name}</p><div className="mt-7 flex justify-center gap-1.5">{testimonials.map((item, index) => <button key={item.name} onClick={() => setActive(index)} className={`h-1.5 ${active === index ? 'w-6 bg-[#8E140E]' : 'w-5 bg-[#1F2838]'}`} aria-label={`Show testimonial ${index + 1}`} data-testid={`button-testimonial-dot-${index + 1}`} />)}</div><div className="mt-3 flex justify-center gap-2"><button onClick={() => setActive((active + testimonials.length - 1) % testimonials.length)} className="rounded p-1 text-[#8E140E]" aria-label="Previous testimonial" data-testid="button-testimonial-previous"><ArrowLeft size={16} /></button><button onClick={() => setActive((active + 1) % testimonials.length)} className="rounded p-1 text-[#8E140E]" aria-label="Next testimonial" data-testid="button-testimonial-next"><ArrowRight size={16} /></button></div><div className="absolute -right-2 bottom-4 hidden h-20 w-14 rounded-[50%] bg-gradient-to-br from-[#8E140E] via-white to-[#1F2838] md:block" /></div></div></section>;
+  return <section id="blogs" className="py-10 md:py-14"><div className="container-wide"><Heading title="Parent Say" accent="About us" /><div className="relative mx-auto mt-8 max-w-[760px] px-10 text-center sm:px-14"><Quote className="absolute left-0 top-0 text-[#8E140E]" fill="currentColor" size={40} /><Quote className="absolute right-0 top-0 rotate-180 text-[#8E140E]" fill="currentColor" size={40} /><blockquote className="whitespace-pre-line text-[16px] leading-[1.55] text-[#1F2838]" data-testid="text-testimonial">{testimonial.quote}</blockquote><p className="mt-5 text-right text-[18px] font-semibold text-[#8E140E]" data-testid="text-testimonial-name">{testimonial.name}</p><div className="mt-7 flex justify-center gap-1.5">{testimonials.map((item, index) => <button key={item.name} onClick={() => setActive(index)} className={`h-1.5 ${active === index ? 'w-6 bg-[#8E140E]' : 'w-5 bg-[#1F2838]'}`} aria-label={`Show testimonial ${index + 1}`} data-testid={`button-testimonial-dot-${index + 1}`} />)}</div><div className="mt-3 flex justify-center gap-2"><button onClick={() => setActive((active + testimonials.length - 1) % testimonials.length)} className="rounded p-1 text-[#8E140E]" aria-label="Previous testimonial" data-testid="button-testimonial-previous"><ArrowLeft size={16} /></button><button onClick={() => setActive((active + 1) % testimonials.length)} className="rounded p-1 text-[#8E140E]" aria-label="Next testimonial" data-testid="button-testimonial-next"><ArrowRight size={16} /></button></div><div className="absolute -right-2 bottom-4 hidden h-20 w-14 rounded-[50%] bg-gradient-to-br from-[#8E140E] via-white to-[#1F2838] md:block" /></div></div></section>;
 }
 
 function Admissions({ onEnquire }: { onEnquire: () => void }) {
-  return <section id="career" className="py-8 text-center"><button onClick={onEnquire} className="rounded-full border-2 border-[#8E140E] px-10 py-5 text-base font-semibold text-[#8E140E] hover:bg-[#8E140E] hover:text-white" data-testid="button-admissions-enquiry">START YOUR ADMISSION ENQUIRY <ArrowRight className="ml-2 inline" size={20} /></button></section>;
+  return <section id="career" className="py-6 text-center"><button onClick={onEnquire} className="rounded-full border-2 border-[#8E140E] px-10 py-5 text-base font-semibold text-[#8E140E] hover:bg-[#8E140E] hover:text-white" data-testid="button-admissions-enquiry">START YOUR ADMISSION ENQUIRY <ArrowRight className="ml-2 inline" size={20} /></button></section>;
 }
 
 function Footer({ onEnquire }: { onEnquire: () => void }) {
