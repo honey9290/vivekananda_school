@@ -41,7 +41,16 @@
   .hero-dots { background-image: radial-gradient(hsl(var(--secondary)) 1.5px, transparent 1.5px); background-size: 12px 12px; } .dot-divider { background-image: radial-gradient(hsl(var(--primary)) 1.2px, transparent 1.2px); background-size: 8px 8px; }
   .school-card { transition: transform .25s ease, box-shadow .25s ease; } .school-card:hover { transform: translateY(-4px); box-shadow: 0 10px 18px rgba(31,40,56,.14); }
   .nav-link { position: relative; } .nav-link::after { content: ""; position: absolute; left: 0; right: 100%; bottom: -8px; height: 2px; background: hsl(var(--primary)); transition: right .22s ease; } .nav-link:hover::after { right: 0; }
+  .wallpaper-icon-depth { transition: transform .35s cubic-bezier(.34,1.56,.64,1); will-change: transform; }
+  .wallpaper-icon-depth:hover { transform: scale(1.4) rotate(-8deg); z-index: 5; }
+  .wallpaper-icon-float-a, .wallpaper-icon-float-b, .wallpaper-icon-float-c { animation-timing-function: ease-in-out; animation-iteration-count: infinite; will-change: transform; }
+  .wallpaper-icon-float-a { animation-name: wallpaper-icon-float-a; }
+  .wallpaper-icon-float-b { animation-name: wallpaper-icon-float-b; }
+  .wallpaper-icon-float-c { animation-name: wallpaper-icon-float-c; }
 }
+@keyframes wallpaper-icon-float-a { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-16px) rotate(5deg); } }
+@keyframes wallpaper-icon-float-b { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(6px, -10px) rotate(-6deg); } }
+@keyframes wallpaper-icon-float-c { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
 .section-heading { font-family: var(--app-font-serif); font-style: italic; font-weight: 700; color: #1F2838; }
 .section-heading em { color: #8E140E; font-style: normal; }
 .ornament { display: flex; width: 230px; align-items: center; justify-content: center; gap: 8px; color: #8E140E; }

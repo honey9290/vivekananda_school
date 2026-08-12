@@ -1,12 +1,57 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowLeft, ArrowRight, BookOpen, Bus, Check, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Play, Quote, Send, Trophy, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Bus, Check, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Send, Trophy, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
-import wallpaper from '@assets/wallpaper.png';
+const WALLPAPER_TILE = { width: 897, height: 1753 };
+const WALLPAPER_ICONS = [
+  { file: 'icon-01.png', leftPct: 91.304, topPct: 3.137, widthPct: 3.122 },
+  { file: 'icon-02.png', leftPct: 6.243, topPct: 3.195, widthPct: 2.787 },
+  { file: 'icon-03.png', leftPct: 26.756, topPct: 3.48, widthPct: 6.466 },
+  { file: 'icon-04.png', leftPct: 5.463, topPct: 5.077, widthPct: 7.246 },
+  { file: 'icon-05.png', leftPct: 86.065, topPct: 5.419, widthPct: 8.807 },
+  { file: 'icon-06.png', leftPct: 1.895, topPct: 12.265, widthPct: 12.932 },
+  { file: 'icon-07.png', leftPct: 93.2, topPct: 14.375, widthPct: 3.456 },
+  { file: 'icon-08.png', leftPct: 91.639, topPct: 20.251, widthPct: 5.351 },
+  { file: 'icon-09.png', leftPct: 94.649, topPct: 26.868, widthPct: 2.899 },
+  { file: 'icon-10.png', leftPct: 3.233, topPct: 32.858, widthPct: 3.456 },
+  { file: 'icon-11.png', leftPct: 87.737, topPct: 34.17, widthPct: 11.371 },
+  { file: 'icon-12.png', leftPct: 3.456, topPct: 40.103, widthPct: 3.79 },
+  { file: 'icon-13.png', leftPct: 93.2, topPct: 48.431, widthPct: 3.122 },
+  { file: 'icon-14.png', leftPct: 3.233, topPct: 50.086, widthPct: 6.577 },
+  { file: 'icon-15.png', leftPct: 89.967, topPct: 51.169, widthPct: 8.25 },
+  { file: 'icon-16.png', leftPct: 4.236, topPct: 57.616, widthPct: 2.787 },
+  { file: 'icon-17.png', leftPct: 93.088, topPct: 58.985, widthPct: 3.233 },
+  { file: 'icon-18.png', leftPct: 89.855, topPct: 63.149, widthPct: 9.142 },
+  { file: 'icon-19.png', leftPct: 3.01, topPct: 63.206, widthPct: 6.243 },
+  { file: 'icon-20.png', leftPct: 3.233, topPct: 73.36, widthPct: 7.692 },
+  { file: 'icon-21.png', leftPct: 3.902, topPct: 84.598, widthPct: 3.456 },
+  { file: 'icon-22.png', leftPct: 91.527, topPct: 86.537, widthPct: 3.233 },
+  { file: 'icon-23.png', leftPct: 87.402, topPct: 90.873, widthPct: 7.135 },
+  { file: 'icon-24.png', leftPct: 5.24, topPct: 90.987, widthPct: 8.361 },
+] as const;
+
+const FLOAT_VARIANTS = ['wallpaper-icon-float-a', 'wallpaper-icon-float-b', 'wallpaper-icon-float-c'];
+
+function WallpaperTile() {
+  return <div className="relative mx-auto w-[90%]" style={{ aspectRatio: `${WALLPAPER_TILE.width} / ${WALLPAPER_TILE.height}` }}>
+    {WALLPAPER_ICONS.map((icon, index) => <div key={icon.file} className="wallpaper-icon-depth pointer-events-auto absolute z-20" style={{ left: `${icon.leftPct}%`, top: `${icon.topPct}%`, width: `${icon.widthPct}%` }}>
+      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 0.83) % 6).toFixed(2)}s`, animationDuration: `${(5 + (index % 6) * 1.1).toFixed(2)}s` }} />
+    </div>)}
+  </div>;
+}
+
+function WallpaperLayer() {
+  return <div className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div className="flex flex-col">
+      {Array.from({ length: 16 }, (_, index) => <WallpaperTile key={index} />)}
+    </div>
+  </div>;
+}
+
 
 const queryClient = new QueryClient();
 const navItems = [
@@ -54,21 +99,26 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
 
 function Hero() {
   return <section id="top" className="bg-white">
-    <div className="grid min-h-[365px] md:h-[550px] md:grid-cols-2">
+    <div className="grid min-h-[365px] md:h-[550px] md:grid-cols-3">
       <div className="relative min-h-[275px] overflow-hidden bg-[#1F2838] md:h-full">
         <img src="/campus-courtyard.jpg" alt="Vivekananda Concept School campus" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-tr from-[#1F2838]/30 to-transparent" />
         <div className="absolute bottom-4 left-5 rounded bg-white/90 px-3 py-2 text-[13px] font-bold tracking-[.14em] text-[#8E140E]">A CAMPUS BUILT FOR CHILDREN</div>
       </div>
-      <div className="hero-pattern relative flex items-center overflow-hidden px-8 py-12 sm:px-12">
+      <div className="hero-pattern relative flex items-center overflow-hidden px-8 py-12 sm:px-8">
         <div className="absolute -left-16 top-[-38px] h-[310px] w-[90px] rotate-[27deg] bg-[#8E140E]" />
         <div className="absolute -right-12 bottom-[-60px] h-[330px] w-[60px] rotate-[26deg] bg-[#8E140E]" />
         <div className="relative z-10 max-w-[480px] text-white">
           <p className="text-[14px] font-bold tracking-[.25em] text-[#FFFFFF]">WELCOME TO OUR SCHOOL</p>
-          <h1 className="mt-4 font-sans text-[clamp(2.4rem,4.6vw,4.1rem)] font-semibold leading-[1.08]">Vivekananda Concept School</h1>
+          <h1 className="mt-4 font-sans text-[clamp(1.9rem,3.4vw,3rem)] font-semibold leading-[1.08]">Vivekananda Concept School</h1>
           <p className="mt-3 font-display text-[clamp(1.4rem,2.2vw,1.9rem)] italic text-[#FFFFFF]">KURNOOL</p>
           <p className="mt-3 max-w-[315px] text-[17px] leading-6 text-white/85">A place where every child learns, grows and shines.</p>
         </div>
+      </div>
+      <div className="relative min-h-[275px] overflow-hidden bg-[#1F2838] md:h-full">
+        <img src="/making-lab.jpg" alt="Vivekananda Concept School students" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#1F2838]/30 to-transparent" />
+        <div className="absolute bottom-4 left-5 rounded bg-white/90 px-3 py-2 text-[13px] font-bold tracking-[.14em] text-[#8E140E]">HANDS-ON LEARNING</div>
       </div>
     </div>
     <div className="relative h-8 overflow-hidden bg-white"><div className="absolute left-0 top-0 h-8 w-24 bg-[#8E140E]" style={{ clipPath: 'polygon(0 0, 100% 0, 71% 50%, 100% 100%, 0 100%, 27% 50%)' }} /><div className="hero-dots absolute right-0 top-0 h-8 w-24 opacity-50" /></div>
@@ -82,7 +132,7 @@ function Heading({ title, accent }: { title: string; accent?: string }) {
 function Intro() {
   return <section id="about" className="relative overflow-hidden py-14 md:py-20"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#8E140E] opacity-70" /><div className="container-wide grid gap-10 md:grid-cols-[1fr_1fr] md:items-center">
     <div className="reveal"><h2 className="section-heading text-[clamp(1.9rem,3.3vw,2.5rem)]">Welcome to Vivekananda <em>Concept School</em></h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div><p className="mt-6 max-w-[470px] text-[17px] leading-6 text-[#1F2838]">Welcome to Vivekananda Concept School! Igniting minds, shaping futures. Join us for academic excellence, character building, and holistic development.</p></div>
-    <div className="reveal relative mx-auto w-full max-w-[430px] border-[8px] border-[#FFFFFF] bg-[#1F2838] shadow-sm"><div className="relative aspect-video overflow-hidden"><img src="/making-lab.jpg" alt="Students learning together" className="h-full w-full object-cover opacity-90" /><div className="absolute inset-0 grid place-items-center"><span className="grid h-14 w-14 place-items-center rounded-full bg-[#8E140E] text-white shadow-lg"><Play fill="currentColor" size={23} /></span></div><span className="absolute bottom-0 left-0 right-0 bg-black/65 px-3 py-2 text-[14px] font-semibold text-white">Vivekananda Concept School — Our story</span></div></div>
+    <div className="reveal relative mx-auto w-full max-w-[430px] border-[8px] border-[#FFFFFF] bg-[#1F2838] shadow-sm"><div className="relative aspect-video overflow-hidden"><video src="/our-story.mp4" poster="/making-lab.jpg" controls className="h-full w-full object-cover" data-testid="video-our-story" /><span className="pointer-events-none absolute bottom-0 left-0 right-0 bg-black/65 px-3 py-2 text-[14px] font-semibold text-white">Vivekananda Concept School — Our story</span></div></div>
   </div></section>;
 }
 
@@ -103,13 +153,13 @@ function Results() {
 }
 
 const facilities = [
-  [Bus, 'Safe & Convenient Transport', 'GPS-tracked buses covering all major routes, with trained staff ensuring safe pickup and drop every day.'],
-  [GraduationCap, 'Smart Classrooms', 'Interactive digital boards and audio-visual tools that make every lesson engaging and easy to grasp.'],
-  [BookOpen, 'CBSE Based LEAD Curriculum', 'A structured, activity-based curriculum aligned with CBSE standards for strong conceptual learning.'],
-  [Trophy, 'IIT-JEE and NEET Foundation', 'Early foundation coaching that builds problem-solving skills for competitive exams from school itself.'],
+  [Bus, 'Safe & Convenient Transport', 'GPS-tracked buses covering all major routes, with trained staff ensuring safe pickup and drop every day. Parents can rely on consistent timing and real attendance checks at every stop.'],
+  [GraduationCap, 'Smart Classrooms', 'Interactive digital boards and audio-visual tools that make every lesson engaging and easy to grasp. Concepts come alive through visuals, simulations and collaborative activities.'],
+  [BookOpen, 'CBSE Based LEAD Curriculum', 'A structured, activity-based curriculum aligned with CBSE standards for strong conceptual learning. Regular assessments track progress and close gaps early.'],
+  [Trophy, 'IIT-JEE and NEET Foundation', 'Early foundation coaching that builds problem-solving skills for competitive exams from school itself. Experienced faculty blend board preparation with entrance-exam thinking.'],
 ] as const;
 function Facilities() {
-  return <section id="media" className="py-14 md:py-20"><div className="container-wide"><Heading title="Our" accent="Facilities" /><div className="mx-auto mt-11 grid max-w-[680px] grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2">{facilities.map(([Icon, title, copy], index) => <article key={title} className="reveal flex flex-col items-center text-center" data-testid={`card-facility-${index + 1}`}><span className={`facility-circle grid h-24 w-24 place-items-center rounded-full ${index % 2 === 0 ? 'text-[#8E140E]' : 'text-[#1F2838]'}`}><Icon size={42} /></span><h3 className="mt-4 font-sans text-[20px] font-medium text-[#1F2838]">{title}</h3><p className="mt-2 max-w-[260px] text-[15px] leading-5 text-[#1F2838]/75">{copy}</p></article>)}</div></div></section>;
+  return <section id="media" className="py-20 md:py-28"><div className="container-wide"><Heading title="Our" accent="Facilities" /><div className="mx-auto mt-14 grid max-w-[880px] grid-cols-1 gap-x-14 gap-y-16 sm:grid-cols-2">{facilities.map(([Icon, title, copy], index) => <article key={title} className="reveal flex flex-col items-center text-center" data-testid={`card-facility-${index + 1}`}><span className={`facility-circle grid h-32 w-32 place-items-center rounded-full ${index % 2 === 0 ? 'text-[#8E140E]' : 'text-[#1F2838]'}`}><Icon size={54} /></span><h3 className="mt-5 font-sans text-[24px] font-medium text-[#1F2838]">{title}</h3><p className="mt-3 max-w-[320px] text-[16px] leading-6 text-[#1F2838]/75">{copy}</p></article>)}</div></div></section>;
 }
 
 const gallery = ['/making-lab.jpg', '/campus-courtyard.jpg', '/athletics-field.jpg', '/campus-courtyard.jpg', '/making-lab.jpg', '/athletics-field.jpg'];
@@ -131,7 +181,7 @@ function Admissions({ onEnquire }: { onEnquire: () => void }) {
 }
 
 function Footer({ onEnquire }: { onEnquire: () => void }) {
-  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-10 md:py-12"><div className="grid gap-9 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="inline-block rounded-[45%] bg-white px-5 py-4 text-center text-[#8E140E] shadow"><Logo /><small className="mt-1 block text-[12px] tracking-[.13em]">LEARN • GROW • SHINE</small></div><p className="mt-4 max-w-[245px] text-[16px] leading-5">Vivekananda Concept School, Kurnool, under the guidance of a dedicated team of educators.</p></div><div><h3 className="font-semibold">Helpful Links</h3><div className="mt-4 grid gap-2 text-[16px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="font-semibold">Address</h3><a href="tel:+918500045678" className="mt-5 flex items-center gap-2 text-[16px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href="https://www.google.com/maps/search/?api=1&query=3-4-55%2C+Guntha+Bazar+Rd%2C+near+Raja+Reddy+Hospital%2C+Pulivendla%2C+516390" target="_blank" rel="noreferrer" className="mt-4 flex gap-2 text-[16px] leading-5 hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> 3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-3 flex items-center gap-2 text-[16px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-2 text-[16px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-5 rounded border border-white px-4 py-2 text-[14px] font-semibold hover:bg-white hover:text-[#8E140E]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-9 border-t border-white/30 pt-4 text-[14px]">© 2026 Vivekananda Concept School · Mandatory Disclosure</div></div><div className="absolute bottom-4 right-8 rotate-[-18deg] text-[46px] text-white/80">↗</div></footer>;
+  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-10 md:py-12"><div className="grid gap-9 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="text-center"><a href="#top" className="mx-auto flex h-36 w-36 flex-col items-center justify-center gap-1 rounded-full bg-white p-4 text-[#8E140E] shadow" data-testid="link-logo-footer"><img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="h-14 w-14 rounded-full object-cover" /><b className="text-[14px] leading-none tracking-[.06em]">VIVEKANANDA</b><small className="text-[10px] leading-none tracking-[.12em]">CONCEPT SCHOOL</small></a><small className="mt-3 block text-[13px] tracking-[.13em] text-white">LEARN • GROW • SHINE</small></div><p className="mt-4 max-w-[245px] text-[16px] leading-5">Vivekananda Concept School, Kurnool, under the guidance of a dedicated team of educators.</p></div><div><h3 className="font-semibold">Helpful Links</h3><div className="mt-4 grid gap-2 text-[16px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="font-semibold">Address</h3><a href="tel:+918500045678" className="mt-5 flex items-center gap-2 text-[16px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href="https://www.google.com/maps/search/?api=1&query=3-4-55%2C+Guntha+Bazar+Rd%2C+near+Raja+Reddy+Hospital%2C+Pulivendla%2C+516390" target="_blank" rel="noreferrer" className="mt-4 flex gap-2 text-[16px] leading-5 hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> 3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-3 flex items-center gap-2 text-[16px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-2 text-[16px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-5 rounded border border-white px-4 py-2 text-[14px] font-semibold hover:bg-white hover:text-[#8E140E]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-9 border-t border-white/30 pt-4 text-[14px]">© 2026 Vivekananda Concept School · Mandatory Disclosure</div></div><div className="absolute bottom-4 right-8 rotate-[-18deg] text-[46px] text-white/80">↗</div></footer>;
 }
 
 function EnquiryModal({ onClose }: { onClose: () => void }) {
@@ -141,10 +191,10 @@ function EnquiryModal({ onClose }: { onClose: () => void }) {
 }
 
 function AdmissionsPopup({ onClose, onEnquire }: { onClose: () => void; onEnquire: () => void }) {
-  return <div className="fixed inset-0 z-[60] grid place-items-center bg-[#1F2838]/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" onClick={onClose}>
-    <div className="relative w-full max-w-[400px]" onClick={(event) => event.stopPropagation()}>
+  return <div className="fixed inset-0 z-[60] grid place-items-center bg-[#1F2838]/70 p-4" role="dialog" aria-modal="true" onClick={onClose}>
+    <div className="relative w-full max-w-[500px]" onClick={(event) => event.stopPropagation()}>
       <button onClick={onClose} className="absolute -right-2 -top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-white text-[#8E140E] shadow-lg" aria-label="Close admissions popup" data-testid="button-close-admissions-popup"><X size={18} /></button>
-      <img src="/admissions.png" alt="Admissions open at Vivekananda Concept School" className="w-full rounded-lg shadow-2xl" data-testid="img-admissions-popup" />
+      <img src="/admissions.png" alt="Admissions open at Vivekananda Concept School" className="w-full rounded-lg border-4 border-white shadow-2xl" data-testid="img-admissions-popup" />
       <button onClick={() => { onClose(); onEnquire(); }} className="mt-3 w-full rounded-full bg-[#8E140E] py-3 text-xs font-bold text-white" data-testid="button-admissions-popup-enquiry">START YOUR ADMISSION ENQUIRY</button>
     </div>
   </div>;
@@ -153,7 +203,11 @@ function AdmissionsPopup({ onClose, onEnquire }: { onClose: () => void; onEnquir
 function Home() {
   const [modal, setModal] = useState(false); const [admissionsPopup, setAdmissionsPopup] = useState(true); useReveals();
   useEffect(() => { document.title = 'Vivekananda Concept School | Kurnool'; const description = 'Vivekananda Concept School in Kurnool offers thoughtful education from Pre-School through High-School.'; const set = (name: string, content: string) => { let meta = document.querySelector(`meta[name="${name}"]`); if (!meta) { meta = document.createElement('meta'); meta.setAttribute('name', name); document.head.appendChild(meta); } meta.setAttribute('content', content); }; set('description', description); }, []);
-  return <div className="grain min-h-[100dvh] bg-white" style={{ backgroundImage: `linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url(${wallpaper})`, backgroundRepeat: 'no-repeat, repeat-y', backgroundPosition: 'top center, top center', backgroundSize: 'cover, 90% auto' }}><Header onEnquire={() => setModal(true)} /><Hero /><Intro /><Results /><Facilities /><Gallery /><Testimonials /><Admissions onEnquire={() => setModal(true)} /><Footer onEnquire={() => setModal(true)} />{modal && <EnquiryModal onClose={() => setModal(false)} />}{admissionsPopup && <AdmissionsPopup onClose={() => setAdmissionsPopup(false)} onEnquire={() => setModal(true)} />}</div>;
+  return <div className="grain relative min-h-[100dvh] overflow-hidden bg-white">
+    <WallpaperLayer />
+    <div className="relative z-10"><Header onEnquire={() => setModal(true)} /><Hero /><Intro /><Results /><Facilities /><Gallery /><Testimonials /><Admissions onEnquire={() => setModal(true)} /><Footer onEnquire={() => setModal(true)} /></div>
+    {modal && <EnquiryModal onClose={() => setModal(false)} />}{admissionsPopup && <AdmissionsPopup onClose={() => setAdmissionsPopup(false)} onEnquire={() => setModal(true)} />}
+  </div>;
 }
 function Router() { return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>; }
 function RoutedErrorBoundary({ children }: { children: ReactNode }) { const [location] = useLocation(); return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>; }
