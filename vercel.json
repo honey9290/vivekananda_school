@@ -1,0 +1,5 @@
+{
+  "installCommand": "pnpm install",
+  "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/vivekananda-concept-school run build",
+  "outputDirectory": "artifacts/vivekananda-concept-school/dist/public"
+}
