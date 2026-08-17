@@ -2,7 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <!-- No maximum-scale: capping it at 1 stopped phones pinch-zooming the
+         page at all, which fails WCAG 1.4.4 and is the one thing a parent
+         reading small print on a handset is most likely to reach for.
+         viewport-fit=cover keeps env(safe-area-inset-*) usable so the fixed
+         call widget can clear the home indicator. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Vivekananda Concept School</title>
     <meta name="description" content="Vivekananda Concept School — built on Replit. Update this description to reflect the app." />
     <meta name="robots" content="index, follow" />
