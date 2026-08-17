@@ -64,7 +64,7 @@
   33% { transform: translate(45px, 35px) rotate(6deg); }
   66% { transform: translate(-45px, -20px) rotate(-7deg); }
 }
-.section-heading { font-family: var(--app-font-serif); font-style: italic; font-weight: 700; color: #1F2838; }
+.section-heading { font-family: var(--app-font-serif); font-style: italic; font-weight: 700; color: #000; }
 .section-heading em { color: #8E140E; font-style: normal; }
 .ornament { display: flex; width: 230px; align-items: center; justify-content: center; gap: 8px; color: #8E140E; }
 .ornament::before, .ornament::after { content: ""; height: 2px; flex: 1; border-top: 2px dotted #8E140E; }
