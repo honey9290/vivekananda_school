@@ -18,6 +18,44 @@
   --font-sans: var(--app-font-sans); --font-serif: var(--app-font-serif); --font-mono: var(--app-font-mono);
   --radius-sm: calc(var(--radius) - 4px); --radius-md: calc(var(--radius) - 2px); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) + 4px);
 }
+/* Every colour the pages paint with, in one place. Change a value here and it
+   changes everywhere: each one is a Tailwind colour, so it is written in the
+   markup as bg-brand-navy, text-brand-red, border-brand-line and so on. */
+@theme {
+  /* the school blues */
+  --color-brand-navy: #123A5E;
+  --color-brand-navy-dark: #0D2B46;
+  --color-brand-nav: #153B5B;
+
+  /* supporting brand colours */
+  --color-brand-teal: #0F4C5C;
+  --color-brand-green: #1B7A3E;
+  --color-brand-red: #C0392B;
+  --color-brand-orange: #F05D40;
+
+  /* type and rules */
+  --color-brand-grey: #7C8B99;
+  --color-brand-grey-blue: #5A7B99;
+  --color-brand-slate: #3F5771;
+  --color-brand-ink: #1F2838;
+  --color-brand-ink-dark: #1C2A37;
+  --color-brand-sand: #EFE7D7;
+  --color-brand-line: #DCE3EC;
+  --color-brand-placeholder: #96A3B4;
+
+  /* home banner */
+  --color-brand-sky-light: #D3E6F6;
+  --color-brand-sky: #B9D8F0;
+  --color-brand-sky-deep: #9DC6E9;
+  --color-brand-sky-ink: #2E6A9E;
+
+  /* enquiry modal panel, and the scrim behind it */
+  --color-brand-mist-50: #F7FAFD;
+  --color-brand-mist-100: #F2F7FC;
+  --color-brand-mist-200: #EAF1F9;
+  --color-brand-overlay: #101A2B;
+}
+
 :root {
   --background: 0 0% 100%; --foreground: 218 29% 17%; --border: 218 20% 85%; --card: 0 0% 100%; --card-foreground: 218 29% 17%; --card-border: 218 20% 85%;
   --popover: 0 0% 100%; --popover-foreground: 218 29% 17%; --popover-border: 218 20% 85%; --primary: 193 72% 21%; --primary-foreground: 0 0% 100%;

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, BookHeart, Bus, Check, ChevronDown, ChevronRight, FlaskConical, GraduationCap, HeartHandshake, Instagram, Mail, MapPin, Menu, Palette, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, Bus, Check, ChevronDown, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -8,34 +8,34 @@ import NotFound from '@/pages/not-found';
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 const WALLPAPER_TILE = { width: 897, height: 1753 };
 const WALLPAPER_ICONS = [
-  { file: 'icon-01.png', leftPct: 91.304, topPct: 3.137, widthPct: 3.122 },
-  { file: 'icon-02.png', leftPct: 6.243, topPct: 3.195, widthPct: 2.787 },
-  { file: 'icon-03.png', leftPct: 26.756, topPct: 3.48, widthPct: 6.466 },
-  { file: 'icon-04.png', leftPct: 5.463, topPct: 5.077, widthPct: 7.246 },
-  { file: 'icon-05.png', leftPct: 86.065, topPct: 5.419, widthPct: 8.807 },
-  { file: 'icon-06.png', leftPct: 1.895, topPct: 12.265, widthPct: 12.932 },
-  { file: 'icon-07.png', leftPct: 93.2, topPct: 14.375, widthPct: 3.456 },
-  { file: 'icon-08.png', leftPct: 91.639, topPct: 20.251, widthPct: 5.351 },
-  { file: 'icon-09.png', leftPct: 94.649, topPct: 26.868, widthPct: 2.899 },
-  { file: 'icon-11.png', leftPct: 87.737, topPct: 34.17, widthPct: 11.371 },
-  { file: 'icon-12.png', leftPct: 3.456, topPct: 40.103, widthPct: 3.79 },
-  { file: 'icon-13.png', leftPct: 93.2, topPct: 48.431, widthPct: 3.122 },
-  { file: 'icon-14.png', leftPct: 3.233, topPct: 50.086, widthPct: 6.577 },
-  { file: 'icon-15.png', leftPct: 89.967, topPct: 51.169, widthPct: 8.25 },
-  { file: 'icon-16.png', leftPct: 4.236, topPct: 57.616, widthPct: 2.787 },
-  { file: 'icon-18.png', leftPct: 89.855, topPct: 63.149, widthPct: 9.142 },
-  { file: 'icon-19.png', leftPct: 3.01, topPct: 63.206, widthPct: 6.243 },
-  { file: 'icon-20.png', leftPct: 3.233, topPct: 73.36, widthPct: 7.692 },
-  { file: 'icon-21.png', leftPct: 3.902, topPct: 84.598, widthPct: 3.456 },
-  { file: 'icon-23.png', leftPct: 87.402, topPct: 90.873, widthPct: 7.135 },
-  { file: 'icon-24.png', leftPct: 5.24, topPct: 90.987, widthPct: 8.361 },
+  { file: 'apple-svgrepo-com.svg', leftPct: 8, topPct: 4, widthPct: 6 },
+  { file: 'books-svgrepo-com.svg', leftPct: 88, topPct: 9, widthPct: 6 },
+  { file: 'cricket-svgrepo-com.svg', leftPct: 5, topPct: 14, widthPct: 6 },
+  { file: 'cup-svgrepo-com.svg', leftPct: 92, topPct: 19, widthPct: 6 },
+  { file: 'educate-svgrepo-com.svg', leftPct: 12, topPct: 24, widthPct: 5 },
+  { file: 'elephant-svgrepo-com.svg', leftPct: 85, topPct: 29, widthPct: 7 },
+  { file: 'giraffe-svgrepo-com.svg', leftPct: 10, topPct: 34, widthPct: 7 },
+  { file: 'laptop-svgrepo-com.svg', leftPct: 90, topPct: 39, widthPct: 6 },
+  { file: 'lion-svgrepo-com.svg', leftPct: 7, topPct: 44, widthPct: 6 },
+  { file: 'paint-palette-palette-svgrepo-com.svg', leftPct: 86, topPct: 49, widthPct: 6 },
+  { file: 'physical-education-svgrepo-com.svg', leftPct: 15, topPct: 54, widthPct: 5 },
+  { file: 'rainbow-svgrepo-com.svg', leftPct: 94, topPct: 59, widthPct: 7 },
+  { file: 'rocket-svgrepo-com.svg', leftPct: 6, topPct: 64, widthPct: 6 },
+  { file: 'sleeping-svgrepo-com.svg', leftPct: 89, topPct: 69, widthPct: 5 },
+  { file: 'star-svgrepo-com.svg', leftPct: 9, topPct: 74, widthPct: 5 },
+  { file: 'sun-svgrepo-com.svg', leftPct: 91, topPct: 79, widthPct: 6 },
+  { file: 'apple-svgrepo-com.svg', leftPct: 11, topPct: 84, widthPct: 6 },
+  { file: 'books-svgrepo-com.svg', leftPct: 87, topPct: 89, widthPct: 6 },
+  { file: 'cricket-svgrepo-com.svg', leftPct: 5, topPct: 94, widthPct: 6 },
+  { file: 'cup-svgrepo-com.svg', leftPct: 93, topPct: 97, widthPct: 6 },
+  { file: 'educate-svgrepo-com.svg', leftPct: 14, topPct: 99, widthPct: 5 },
 ] as const;
 
 const CENTER_ICONS = [
-  { file: 'icon-01.png', leftPct: 38, topPct: 16, widthPct: 3.6 },
-  { file: 'icon-07.png', leftPct: 58, topPct: 28, widthPct: 3.6 },
-  { file: 'icon-09.png', leftPct: 44, topPct: 42, widthPct: 3.2 },
-  { file: 'icon-13.png', leftPct: 62, topPct: 55, widthPct: 3.6 },
+  { file: 'earth-svgrepo-com.svg', leftPct: 40, topPct: 20, widthPct: 6 },
+  { file: 'carrot-svgrepo-com.svg', leftPct: 60, topPct: 40, widthPct: 5 },
+  { file: 'pineapple-svgrepo-com.svg', leftPct: 45, topPct: 65, widthPct: 5 },
+  { file: 'bulb-svgrepo-com.svg', leftPct: 55, topPct: 85, widthPct: 6 },
 ] as const;
 
 const ALL_TILE_ICONS = [...WALLPAPER_ICONS, ...CENTER_ICONS];
@@ -265,62 +265,32 @@ const HERO_SLIDES = [
   { src: '/athletics-field.jpg', alt: 'Students on the athletics field', position: '50% 50%' },
 ] as const;
 
-const HERO_FEATURES = [
-  { Icon: GraduationCap, tint: '#E7F2E2', ink: '#2F7D32', lines: ['Play Based', 'Learning'] },
-  { Icon: Palette, tint: '#FBEEDF', ink: '#DD7B27', lines: ['Creative', 'Classrooms'] },
-  { Icon: FlaskConical, tint: '#E4EEFB', ink: '#2F6FBE', lines: ['Experiential', 'Activities'] },
-  { Icon: BookHeart, tint: '#FBE7E3', ink: '#CE4A3B', lines: ['Values &', 'Life Skills'] },
-  { Icon: HeartHandshake, tint: '#F6F2DA', ink: '#8A9A26', lines: ['Caring', 'Environment'] },
-] as const;
+function HeroPanel({ image, alt, caption }: { image: string; alt: string; caption: string }) {
+  return <div className="relative min-h-[275px] overflow-hidden bg-[#F05D40] md:h-full">
+    <img src={image} alt={alt} className="absolute inset-0 h-full w-full object-cover" />
+    <div className="absolute inset-0 bg-gradient-to-tr from-[#123A5E]/45 to-transparent" />
+    <span className="absolute bottom-5 left-5 rounded bg-white/92 px-3 py-2 text-[13px] font-bold tracking-[.14em] text-[#2E6A9E]">{caption}</span>
+  </div>;
+}
 
 function Hero() {
-  const [slide, setSlide] = useState(0);
-  useEffect(() => {
-    const timer = window.setInterval(() => setSlide((current) => (current + 1) % HERO_SLIDES.length), 6000);
-    return () => window.clearInterval(timer);
-  }, []);
-  return <>
-    <section id="top" className="hero-cream relative overflow-hidden">
-      <svg width="0" height="0" className="absolute" aria-hidden="true"><defs><clipPath id="hero-blob" clipPathUnits="objectBoundingBox"><path d={HERO_BLOB} transform="scale(.01)" /></clipPath></defs></svg>
-      <Foliage side="left" />
-      <Foliage side="right" />
-
-      <div className="container-hero relative z-10 grid grid-cols-1 items-center gap-8 pb-[118px] pt-8 lg:grid-cols-[minmax(0,41%)_minmax(0,59%)] lg:gap-6 lg:pb-[96px] lg:pt-6">
-        <div className="min-w-0 max-w-[565px]">
-          <p className="text-[clamp(.72rem,.9vw,.88rem)] font-bold tracking-[.22em] text-[#2F7D46]">WELCOME TO <span className="font-round font-extrabold tracking-[.045em] text-[#123A5E]">VIVEKANANDA</span> <span className="font-semibold tracking-[.26em] text-[#7C8B99]">CONCEPT SCHOOL</span></p>
-          <span className="mt-2 block h-[4px] w-[52px] rounded-full bg-[#F0B429]" />
-          <h1 className="mt-5 font-round text-[clamp(2.05rem,3.7vw,3.5rem)] font-extrabold leading-[1.08] tracking-[-.018em] text-[#123A5E]">
-            A Place to Learn,<br /><span className="text-[#1B7A3E]">Grow &amp; Thrive</span>
-          </h1>
-          <p className="mt-5 max-w-[385px] text-[clamp(.98rem,1.15vw,1.18rem)] leading-[1.55] text-[#5A6A78]">We believe in providing a joyful learning experience that encourages curiosity, creativity and confidence.</p>
-        </div>
-
-        <div className="relative min-w-0">
-          <HeroDoodles />
-          <div className="relative mx-auto aspect-[4/2.6] w-full max-w-[790px]">
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full scale-[1.035]" aria-hidden="true">
-              <path d={HERO_BLOB} fill="none" stroke="#B7DDB0" strokeWidth={2} strokeDasharray="6 8" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-            </svg>
-            {HERO_SLIDES.map((item, i) => <img key={item.src + i} src={item.src} alt={i === slide ? item.alt : ''} className={`hero-blob absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? 'opacity-100' : 'opacity-0'}`} style={{ objectPosition: item.position }} />)}
-          </div>
+  return <section id="top" className="bg-white">
+    <div className="grid min-h-[365px] md:h-[500px] md:grid-cols-3">
+      <HeroPanel image="/campus-courtyard.jpg" alt="The Vivekananda Concept School campus" caption="A CAMPUS BUILT FOR CHILDREN" />
+      <div className="relative flex items-center overflow-hidden bg-gradient-to-br from-[#D3E6F6] via-[#B9D8F0] to-[#9DC6E9] px-8 py-14">
+        <span className="absolute -left-16 top-[-38px] h-[310px] w-[90px] rotate-[27deg] bg-white/45" />
+        <span className="absolute -right-12 bottom-[-60px] h-[330px] w-[60px] rotate-[26deg] bg-[#7FB2DE]/45" />
+        <div className="relative z-10 max-w-[480px] text-[#123A5E]">
+          <p className="text-[13px] font-bold tracking-[.25em] text-[#2E6A9E]">WELCOME TO OUR SCHOOL</p>
+          <b className="mt-4 block font-round text-[clamp(1.75rem,3.2vw,2.7rem)] font-extrabold leading-none tracking-[.03em]">VIVEKANANDA</b>
+          <b className="mt-2.5 block text-[clamp(.72rem,1.25vw,.95rem)] font-semibold tracking-[.26em] text-[#5A7B99]">CONCEPT SCHOOL</b>
+          <p className="mt-3 font-display text-[clamp(1.2rem,2vw,1.65rem)] italic">PULIVENDLA</p>
+          <p className="mt-3 max-w-[315px] text-[16px] leading-6 text-[#3F5771]">A place where every child learns, grows and shines.</p>
         </div>
       </div>
-
-    </section>
-
-    {/* The strip rides up over the hero the way it does in the design, so it
-        keeps its own stacking context rather than living inside the section. */}
-    <div className="relative z-20 -mt-[100px] pb-8">
-      <div className="container-hero">
-        <div className="grid grid-cols-1 gap-y-6 rounded-[26px] bg-white px-6 py-7 shadow-[0_18px_44px_-18px_rgba(18,58,94,.28)] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-0 lg:px-4 lg:py-6">
-          {HERO_FEATURES.map(({ Icon, tint, ink, lines }, i) => <div key={lines.join(' ')} className={`flex items-center justify-center gap-3.5 px-3 lg:px-2 ${i === 0 ? '' : 'lg:border-l lg:border-[#EDEAE1]'}`}>
-            <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: tint }}><Icon size={25} style={{ color: ink }} /></span>
-            <span className="text-[clamp(.9rem,1.02vw,1.04rem)] font-medium leading-[1.35] text-[#1F3B52]">{lines[0]}<br />{lines[1]}</span>
-          </div>)}
-        </div>
-      </div>
-    </div>
-  </>;
+      <HeroPanel image="/making-lab.jpg" alt="Vivekananda Concept School students building in the activity room" caption="HANDS-ON LEARNING" />
+  </div>
+  </section>;
 }
 
 /* Wherever the school is named as a heading it is set exactly as the header sets it:
