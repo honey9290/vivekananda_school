@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, Bus, Check, ChevronDown, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, BookMarked, BookOpen, BookText, Bus, Calculator, Check, ChevronDown, ChevronRight, ExternalLink, FlaskConical, Globe2, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, School, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
+import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 const WALLPAPER_TILE = { width: 897, height: 1753 };
 const WALLPAPER_ICONS = [
   { file: 'apple-svgrepo-com.svg', leftPct: 8, topPct: 4, widthPct: 6 },
@@ -13,12 +13,12 @@ const WALLPAPER_ICONS = [
   { file: 'cricket-svgrepo-com.svg', leftPct: 5, topPct: 14, widthPct: 6 },
   { file: 'cup-svgrepo-com.svg', leftPct: 92, topPct: 19, widthPct: 6 },
   { file: 'educate-svgrepo-com.svg', leftPct: 12, topPct: 24, widthPct: 5 },
-  { file: 'elephant-svgrepo-com.svg', leftPct: 85, topPct: 29, widthPct: 7 },
+  { file: 'earth-svgrepo-com.svg', leftPct: 85, topPct: 29, widthPct: 6 },
   { file: 'giraffe-svgrepo-com.svg', leftPct: 10, topPct: 34, widthPct: 7 },
   { file: 'laptop-svgrepo-com.svg', leftPct: 90, topPct: 39, widthPct: 6 },
   { file: 'lion-svgrepo-com.svg', leftPct: 7, topPct: 44, widthPct: 6 },
-  { file: 'paint-palette-palette-svgrepo-com.svg', leftPct: 86, topPct: 49, widthPct: 6 },
-  { file: 'physical-education-svgrepo-com.svg', leftPct: 15, topPct: 54, widthPct: 5 },
+  { file: 'paint-palette-palette-svgrepo-com.svg', leftPct: 14, topPct: 49, widthPct: 6 },
+  { file: 'physical-education-svgrepo-com.svg', leftPct: 88, topPct: 54, widthPct: 5 },
   { file: 'rainbow-svgrepo-com.svg', leftPct: 94, topPct: 59, widthPct: 7 },
   { file: 'rocket-svgrepo-com.svg', leftPct: 6, topPct: 64, widthPct: 6 },
   { file: 'sleeping-svgrepo-com.svg', leftPct: 89, topPct: 69, widthPct: 5 },
@@ -32,10 +32,10 @@ const WALLPAPER_ICONS = [
 ] as const;
 
 const CENTER_ICONS = [
-  { file: 'earth-svgrepo-com.svg', leftPct: 40, topPct: 20, widthPct: 6 },
-  { file: 'carrot-svgrepo-com.svg', leftPct: 60, topPct: 40, widthPct: 5 },
-  { file: 'pineapple-svgrepo-com.svg', leftPct: 45, topPct: 65, widthPct: 5 },
-  { file: 'bulb-svgrepo-com.svg', leftPct: 55, topPct: 85, widthPct: 6 },
+  { file: 'elephant-svgrepo-com.svg', leftPct: 38, topPct: 18, widthPct: 7 },
+  { file: 'carrot-svgrepo-com.svg', leftPct: 70, topPct: 42, widthPct: 5 },
+  { file: 'pineapple-svgrepo-com.svg', leftPct: 35, topPct: 67, widthPct: 5 },
+  { file: 'bulb-svgrepo-com.svg', leftPct: 68, topPct: 82, widthPct: 6 },
 ] as const;
 
 const ALL_TILE_ICONS = [...WALLPAPER_ICONS, ...CENTER_ICONS];
@@ -45,7 +45,7 @@ const FLOAT_VARIANTS = ['wallpaper-icon-float-a', 'wallpaper-icon-float-b', 'wal
 function WallpaperTile() {
   return <div className="relative mx-auto w-[90%]" style={{ aspectRatio: `${WALLPAPER_TILE.width} / ${WALLPAPER_TILE.height}` }}>
     {ALL_TILE_ICONS.map((icon, index) => <div key={`${icon.file}-${icon.leftPct}-${icon.topPct}`} className="wallpaper-icon-depth absolute" style={{ left: `${icon.leftPct}%`, top: `${icon.topPct}%`, width: `${icon.widthPct}%` }}>
-      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
+      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full opacity-50 ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
     </div>)}
   </div>;
 }
@@ -127,10 +127,10 @@ function useReveals() {
 
 function Logo({ footer = false }: { footer?: boolean }) {
   return <a href="#top" className="flex shrink-0 items-center gap-3.5" data-testid="link-logo">
-    <img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="h-[64px] w-[64px] shrink-0 rounded-full object-cover sm:h-[82px] sm:w-[82px]" />
+    <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-[64px] w-[64px] shrink-0 rounded-full object-cover sm:h-[82px] sm:w-[82px]" />
     <span className="leading-none">
-      <b className={`block font-round text-[clamp(1.05rem,1.8vw,1.65rem)] font-extrabold tracking-[.045em] ${footer ? 'text-white' : 'text-[#123A5E]'}`}>VIVEKANANDA</b>
-      <small className={`mt-[6px] block text-[clamp(.6rem,.85vw,.86rem)] font-semibold tracking-[.26em] sm:tracking-[.3em] ${footer ? 'text-white/70' : 'text-[#7C8B99]'}`}>CONCEPT SCHOOL</small>
+      <b className={`block font-round text-[clamp(.9rem,1.5vw,1.35rem)] font-extrabold tracking-[.045em] ${footer ? 'text-white' : 'text-[#123A5E]'}`}>SREE VIVEKANANDA</b>
+      <small className={`mt-[6px] block text-[clamp(.55rem,.75vw,.75rem)] font-semibold tracking-[.15em] sm:tracking-[.2em] ${footer ? 'text-white/70' : 'text-[#7C8B99]'}`}>EDUCATIONAL SOCIETY</small>
     </span>
   </a>;
 }
@@ -282,10 +282,10 @@ function Hero() {
         <span className="absolute -right-12 bottom-[-60px] h-[330px] w-[60px] rotate-[26deg] bg-[#7FB2DE]/45" />
         <div className="relative z-10 max-w-[480px] text-[#123A5E]">
           <p className="text-[13px] font-bold tracking-[.25em] text-[#2E6A9E]">WELCOME TO OUR SCHOOL</p>
-          <b className="mt-4 block font-round text-[clamp(1.75rem,3.2vw,2.7rem)] font-extrabold leading-none tracking-[.03em]">VIVEKANANDA</b>
-          <b className="mt-2.5 block text-[clamp(.72rem,1.25vw,.95rem)] font-semibold tracking-[.26em] text-[#5A7B99]">CONCEPT SCHOOL</b>
+          <b className="mt-4 block font-round text-[clamp(1.5rem,2.8vw,2.2rem)] font-extrabold leading-none tracking-[.03em]">SREE VIVEKANANDA</b>
+          <b className="mt-2.5 block text-[clamp(.72rem,1.1vw,.85rem)] font-semibold tracking-[.15em] text-[#5A7B99]">EDUCATIONAL SOCIETY</b>
           <p className="mt-3 font-display text-[clamp(1.2rem,2vw,1.65rem)] italic">PULIVENDLA</p>
-          <p className="mt-3 max-w-[315px] text-[16px] leading-6 text-[#3F5771]">A place where every child learns, grows and shines.</p>
+          <p className="mt-3 max-w-[315px] text-[15px] leading-6 font-semibold uppercase tracking-wide text-[#3F5771]">Inspiring growth, creating leader</p>
         </div>
       </div>
       <HeroPanel image="/making-lab.jpg" alt="Vivekananda Concept School students building in the activity room" caption="HANDS-ON LEARNING" />
@@ -298,10 +298,10 @@ function Hero() {
 function SchoolName({ size = 'md' }: { size?: 'sm' | 'md' }) {
   const small = size === 'sm';
   return <span className="flex items-center gap-3">
-    <img src="/logo.jpeg" alt="Vivekananda Concept School logo" className={`shrink-0 rounded-full object-cover ${small ? 'h-[58px] w-[58px]' : 'h-[74px] w-[74px]'}`} />
-    <span className="leading-none">
-      <b className={`block font-round font-extrabold tracking-[.045em] text-[#123A5E] ${small ? 'text-[clamp(1.15rem,2.4vw,1.5rem)]' : 'text-[clamp(1.45rem,2.9vw,2.1rem)]'}`}>VIVEKANANDA</b>
-      <small className={`mt-[6px] block font-semibold tracking-[.26em] text-[#7C8B99] ${small ? 'text-[clamp(.6rem,1.1vw,.76rem)]' : 'text-[clamp(.68rem,1.3vw,.95rem)]'}`}>CONCEPT SCHOOL</small>
+    <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className={`shrink-0 rounded-full object-cover ${small ? 'h-[58px] w-[58px]' : 'h-[74px] w-[74px]'}`} />
+    <span className="leading-none text-left">
+      <b className={`block font-round font-extrabold tracking-[.045em] text-[#123A5E] ${small ? 'text-[clamp(1rem,1.9vw,1.3rem)]' : 'text-[clamp(1.2rem,2.2vw,1.6rem)]'}`}>SREE VIVEKANANDA</b>
+      <small className={`mt-[6px] block font-semibold tracking-[.15em] text-[#7C8B99] ${small ? 'text-[clamp(.55rem,1vw,.65rem)]' : 'text-[clamp(.6rem,1.1vw,.75rem)]'}`}>EDUCATIONAL SOCIETY</small>
     </span>
   </span>;
 }
@@ -312,16 +312,43 @@ function Heading({ title, accent }: { title?: string; accent?: string }) {
 
 function Intro() {
   return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" /><div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
-    <div className="reveal"><h2><SchoolName /></h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div><p className="mt-5 max-w-[470px] text-[17px] leading-6 text-black">Igniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
-    {/* The quote is set into the artwork rather than laid over it, so the alt
-        text has to carry the whole line and the attribution — to a screen
-        reader or a crawler this is otherwise a blank decorative panel. And no
-        fixed aspect box here: the plate is 960×701, so forcing it into the 4/3
-        frame the campus photograph used would crop a slice off each side and
-        eat into the words. Letting it keep its own ratio means nothing of the
-        quote is ever cut, whatever the column width. */}
-    <div className="reveal relative mx-auto w-full max-w-[400px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/swami-vivekananda-quote.jpg" alt="“Educate and raise the masses, and thus alone a nation is possible.” — Swami Vivekananda" className="block w-full rounded-2xl" data-testid="img-about" /></div>
-  </div></section>;
+    <div className="reveal"><h2><SchoolName /></h2><div className="ornament mt-2 flex justify-center"><span className="ornament-mark">◆</span></div><p className="mt-5 max-w-[470px] text-[17px] leading-6 text-black">Igniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
+    <div className="reveal relative mx-auto w-full max-w-[400px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/swami-vivekananda-quote.jpg" alt="Educate and raise the masses, and thus alone a nation is possible — Swami Vivekananda" className="block w-full rounded-2xl" data-testid="img-about" /></div>
+  </div>
+  <div className="container-wide mt-10 md:mt-14">
+    <div className="reveal text-center mb-2">
+      <h3 className="text-[20px] font-bold text-[#123A5E]">Branches in Pulivendla, Kadapa District, Andhra Pradesh</h3>
+      <div className="ornament mt-2 flex justify-center"><span className="ornament-mark">◆</span></div>
+      <p className="mt-3 text-[15px] text-[#3F5771] font-medium text-center">Sree Swamy Vivekananda School — Three Branches, One Vision</p>
+    </div>
+    <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+      <Link href="/branch/shivalayam-street" className="reveal flex flex-col items-center gap-3 cursor-pointer rounded-2xl p-4 transition hover:bg-white/70 hover:shadow-md group">
+        <img src="/logo.jpeg" alt="School logo" className="h-16 w-16 rounded-full object-cover shadow group-hover:scale-105 transition-transform" />
+        <div>
+          <p className="font-bold text-[#0F4C5C] text-[16px]">SREE SWAMY VIVEKANANDA SCHOOL</p>
+          <p className="mt-1 text-[15px]"><span className="font-bold text-[#123A5E] text-[17px]">Shivalayam Street</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
+          <p className="mt-2 text-[13px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1">View Branch <ArrowRight size={13} /></p>
+        </div>
+      </Link>
+      <Link href="/branch/brahmanapalli-road" className="reveal flex flex-col items-center gap-3 cursor-pointer rounded-2xl p-4 transition hover:bg-white/70 hover:shadow-md group">
+        <img src="/logo.jpeg" alt="School logo" className="h-16 w-16 rounded-full object-cover shadow group-hover:scale-105 transition-transform" />
+        <div>
+          <p className="font-bold text-[#0F4C5C] text-[16px]">SREE SWAMY VIVEKANANDA SCHOOL</p>
+          <p className="mt-1 text-[15px]"><span className="font-bold text-[#123A5E] text-[17px]">Brahmanapalli Road</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
+          <p className="mt-2 text-[13px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1">View Branch <ArrowRight size={13} /></p>
+        </div>
+      </Link>
+      <Link href="/branch/parnapalli-road" className="reveal flex flex-col items-center gap-3 cursor-pointer rounded-2xl p-4 transition hover:bg-white/70 hover:shadow-md group">
+        <img src="/logo.jpeg" alt="School logo" className="h-16 w-16 rounded-full object-cover shadow group-hover:scale-105 transition-transform" />
+        <div>
+          <p className="font-bold text-[#0F4C5C] text-[16px]">SREE SWAMY VIVEKANANDA SCHOOL</p>
+          <p className="mt-1 text-[15px]"><span className="font-bold text-[#123A5E] text-[17px]">Parnapalli Road</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
+          <p className="mt-2 text-[13px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1">View Branch <ArrowRight size={13} /></p>
+        </div>
+      </Link>
+    </div>
+  </div>
+  </section>;
 }
 
 type Programme = { name: string; image: string; copy: string };
@@ -413,7 +440,7 @@ function Facilities() {
         <p className="mt-1.5 max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[13.5px] sm:leading-[1.5]">{copy}</p>
         {/* A real anchor so it can be opened in a new tab or read as a link,
             with the click intercepted for a client-side route. */}
-        {index === 0 && <a href="/bus-routes" onClick={(event) => { event.preventDefault(); navigate('/bus-routes'); window.scrollTo({ top: 0 }); }} className="mt-3 text-[12px] font-semibold leading-[1.3] text-[#0F4C5C] underline decoration-dotted underline-offset-4 hover:text-black sm:text-[13px]" data-testid="link-bus-routes">Check if our bus comes to your area →</a>}
+        {index === 0 && null}
       </article>)}
     </div>
   </div></section>;
@@ -491,7 +518,7 @@ function Admissions({ onEnquire }: { onEnquire: () => void }) {
 }
 
 function Footer({ onEnquire }: { onEnquire: () => void }) {
-  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-5 md:py-7"><div className="grid gap-5 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="text-center"><a href="#top" className="mx-auto flex w-max flex-col items-center gap-2 text-white" data-testid="link-logo-footer"><img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="h-20 w-20 rounded-full border-[3px] border-white object-cover shadow" /><span className="block text-center leading-[1.15]"><b className="block text-[15px] tracking-[.06em]">VIVEKANANDA</b><small className="block text-[11px] tracking-[.18em]">CONCEPT SCHOOL</small><small className="block text-[11px] tracking-[.18em]">PULIVENDLA</small></span></a><small className="mt-2 block text-[11px] tracking-[.13em] text-white">LEARN • GROW • SHINE</small><p className="mx-auto mt-3 max-w-[260px] text-center text-[13px] leading-[1.4]">Vivekananda Concept School, Pulivendla, under the guidance of a dedicated team of educators.</p></div></div><div><h3 className="text-[15px] font-semibold">Helpful Links</h3><div className="mt-3 grid gap-1.5 text-[14px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="text-[15px] font-semibold">Address</h3><a href="tel:+918500045678" className="mt-3 flex items-center gap-2 text-[14px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href="https://www.google.com/maps/search/?api=1&query=3-4-55%2C+Guntha+Bazar+Rd%2C+near+Raja+Reddy+Hospital%2C+Pulivendla%2C+516390" target="_blank" rel="noreferrer" className="mt-2.5 flex gap-2 text-[14px] leading-[1.4] hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> 3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-2.5 flex items-center gap-2 text-[14px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-2.5 flex items-center gap-2 text-[14px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-4 rounded border border-white px-3 py-1.5 text-[12px] font-semibold hover:bg-white hover:text-[#0F4C5C]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-5 border-t border-white/30 pt-3 text-[12px]">© 2026 Vivekananda Concept School · Mandatory Disclosure</div></div></footer>;
+  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-5 md:py-7"><div className="grid gap-5 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="text-center"><a href="#top" className="mx-auto flex w-max flex-col items-center gap-2 text-white" data-testid="link-logo-footer"><img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-20 w-20 rounded-full border-[3px] border-white object-cover shadow" /><span className="block text-center leading-[1.15]"><b className="block text-[15px] tracking-[.06em]">SREE VIVEKANANDA</b><small className="block text-[11px] tracking-[.18em]">EDUCATIONAL SOCIETY</small><small className="block text-[11px] tracking-[.18em]">PULIVENDLA</small></span></a><small className="mt-2 block text-[11px] tracking-[.13em] text-white uppercase">INSPIRING GROWTH, CREATING LEADER</small><p className="mx-auto mt-3 max-w-[260px] text-center text-[13px] leading-[1.4]">Sree Vivekananda Educational Society, Pulivendla, under the guidance of a dedicated team of educators.</p></div></div><div><h3 className="text-[15px] font-semibold">Helpful Links</h3><div className="mt-3 grid gap-1.5 text-[14px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="text-[15px] font-semibold">Address</h3><a href="tel:+918500045678" className="mt-3 flex items-center gap-2 text-[14px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href="https://www.google.com/maps/search/?api=1&query=3-4-55%2C+Guntha+Bazar+Rd%2C+near+Raja+Reddy+Hospital%2C+Pulivendla%2C+516390" target="_blank" rel="noreferrer" className="mt-2.5 flex gap-2 text-[14px] leading-[1.4] hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> 3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-2.5 flex items-center gap-2 text-[14px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-2.5 flex items-center gap-2 text-[14px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-4 rounded border border-white px-3 py-1.5 text-[12px] font-semibold hover:bg-white hover:text-[#0F4C5C]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-5 border-t border-white/30 pt-3 text-[12px]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</div></div></footer>;
 }
 
 /* The dotted corner marks on the brand panel are decoration only, so they are drawn with a repeating
@@ -529,9 +556,9 @@ function EnquiryModal({ onClose }: { onClose: () => void }) {
         <DotGrid className="left-7 top-7 h-[34px] w-[46px]" />
         <DotGrid className="bottom-9 right-8 h-[34px] w-[46px]" />
         <div className="relative z-10 flex w-full flex-col items-center text-center">
-          <img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="mb-5 h-[94px] w-[94px] rounded-full object-cover shadow-[0_10px_24px_-12px_rgba(18,58,94,.6)]" />
-          <b className="font-round text-[clamp(1.6rem,3.4vw,2.5rem)] font-extrabold leading-none tracking-[.045em] text-[#123A5E]">VIVEKANANDA</b>
-          <small className="mt-2.5 block text-[clamp(.7rem,1.4vw,1rem)] font-semibold leading-none tracking-[.26em] text-[#7C8B99]">CONCEPT SCHOOL</small>
+          <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="mb-5 h-[94px] w-[94px] rounded-full object-cover shadow-[0_10px_24px_-12px_rgba(18,58,94,.6)]" />
+          <b className="font-round text-[clamp(1.4rem,2.5vw,2rem)] font-extrabold leading-none tracking-[.045em] text-[#123A5E]">SREE VIVEKANANDA</b>
+          <small className="mt-2.5 block text-[clamp(.6rem,1vw,.8rem)] font-semibold leading-none tracking-[.15em] text-[#7C8B99]">EDUCATIONAL SOCIETY</small>
           <span className="mt-4 flex items-center gap-2">
             <span className="h-[2px] w-[62px] rounded-full bg-[#123A5E]" /><span className="h-[5px] w-[5px] rounded-full bg-[#123A5E]" /><span className="h-[2px] w-[62px] rounded-full bg-[#123A5E]" />
           </span>
@@ -539,7 +566,7 @@ function EnquiryModal({ onClose }: { onClose: () => void }) {
             <span className="flex w-full items-center gap-3">
               <span className="h-px flex-1 bg-[#123A5E]/40" /><Quote size={22} className="shrink-0 rotate-180 text-[#123A5E]" fill="currentColor" strokeWidth={0} /><span className="h-px flex-1 bg-[#123A5E]/40" />
             </span>
-            <p className="mt-4 text-[13.5px] leading-[1.62] text-[#3F5771]">Knowledge can only be obtained in one way, the way of experience; there is no other way to know.</p>
+            <p className="mt-4 text-[14px] uppercase font-bold tracking-wide text-[#3F5771]">Inspiring growth, creating leader</p>
             <Quote size={22} className="mt-4 text-[#123A5E]" fill="currentColor" strokeWidth={0} />
           </blockquote>
         </div>
@@ -573,6 +600,10 @@ function EnquiryModal({ onClose }: { onClose: () => void }) {
               <ChevronDown size={17} className="pointer-events-none absolute right-3 top-[10px] text-[#123A5E]" />
             </EnquiryField>
             <button type="submit" className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-[#123A5E] py-3.5 text-[12.5px] font-bold tracking-[.14em] text-white shadow-[0_12px_22px_-12px_rgba(18,58,94,.9)] transition hover:bg-[#0D2B46]" data-testid="button-submit-enquiry">SEND ENQUIRY <Send size={15} /></button>
+            <div className="mt-5 text-center">
+              <span className="text-[13.5px] text-[#3F5771]">Or call us at </span>
+              <a href="tel:+918331003003" className="font-semibold text-[#123A5E]">+91 8331 003 003</a>
+            </div>
           </form>
         </>}
       </div>
@@ -674,7 +705,167 @@ function Home() {
     {(onEnquire) => <><Hero /><Intro /><Results /><Facilities /><Gallery /><Testimonials /><Admissions onEnquire={onEnquire} /></>}
   </PageShell>;
 }
-function Router() { return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/faculty" component={FacultyPage} /><Route path="/bus-routes" component={BusRoutesPage} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>; }
+
+/* ─────────────────────────── BRANCH FACULTY ─────────────────────────── */
+const BRANCH_SUBJECTS = [
+  { label: 'Telugu', icon: BookOpen, color: '#E8F5E9', accent: '#2E7D32' },
+  { label: 'Hindi', icon: BookMarked, color: '#FFF3E0', accent: '#E65100' },
+  { label: 'English', icon: BookText, color: '#E3F2FD', accent: '#1565C0' },
+  { label: 'Mathematics', icon: Calculator, color: '#F3E5F5', accent: '#6A1B9A' },
+  { label: 'Science', icon: FlaskConical, color: '#E0F7FA', accent: '#00695C' },
+  { label: 'Social Studies', icon: Globe2, color: '#FBE9E7', accent: '#BF360C' },
+] as const;
+
+function BranchFaculty() {
+  return (
+    <section className="py-8 md:py-12">
+      <div className="container-wide">
+        <div className="text-center mb-8">
+          <h2 className="section-heading text-[clamp(1.6rem,2.8vw,2.2rem)]">Our <em>Faculty</em></h2>
+          <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
+          <p className="mt-3 text-[15px] text-[#3F5771]">Dedicated teachers across all subjects, guiding every student with care and expertise.</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+          {BRANCH_SUBJECTS.map(({ label, icon: Icon, color, accent }) => (
+            <div key={label} className="reveal flex flex-col items-center gap-3 rounded-2xl p-6 shadow-sm border border-white/60" style={{ backgroundColor: color }}>
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
+                <Icon size={32} style={{ color: accent }} />
+              </div>
+              <div className="text-center">
+                <p className="font-bold text-[15px]" style={{ color: accent }}>{label}</p>
+                <p className="text-[13px] text-black/60 mt-0.5">Faculty</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────── BRANCH PAGE TEMPLATE ─────────────────────────── */
+type BranchInfo = { title: string; streetName: string; fullAddress: string; description: string; mapQuery: string; mapLabel: string; busStopName: string };
+
+function BranchBusRoute({ stopName }: { stopName: string }) {
+  const route = busRoutes.find((r) => r.stop === stopName);
+  if (!route) return null;
+  return (
+    <section className="py-8 md:py-10 bg-white/50">
+      <div className="container-wide">
+        <div className="text-center mb-6">
+          <h2 className="section-heading text-[clamp(1.4rem,2.4vw,1.9rem)]">Bus <em>Route</em></h2>
+          <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
+          <p className="mt-3 text-[14px] text-[#3F5771]">Our school bus picks up students from the following areas on the <strong>{stopName}</strong> route.</p>
+        </div>
+        <div className="mx-auto max-w-[720px] rounded-2xl border border-[#1C2A37]/20 bg-white/85 p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <Bus size={18} className="text-[#0F4C5C]" />
+            <h3 className="font-semibold text-[15px] text-[#0F4C5C]">Sree Swamy Vivekananda School — {stopName}</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {route.areas.map((area) => (
+              <span key={area} className="rounded-full bg-[#E8F4F8] px-3 py-1 text-[13px] text-[#0F4C5C] font-medium">{area}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BranchPageTemplate({ branch }: { branch: BranchInfo }) {
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${branch.mapQuery}`;
+  return (
+    <PageShell title={`${branch.streetName} Branch | Sree Vivekananda Educational Society`} description={branch.description}>
+      {(onEnquire) => <>
+        {/* Hero Info */}
+        <section className="pt-8 md:pt-12 pb-6">
+          <div className="container-wide">
+            <div className="grid gap-10 md:grid-cols-[1fr_1fr] md:items-start">
+              {/* Left — Logo + Name + Address */}
+              <div className="flex flex-col items-center md:items-start text-center md:text-left gap-5">
+                <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-28 w-28 rounded-full object-cover shadow-lg border-4 border-white" />
+                <div>
+                  <p className="text-[13px] font-bold tracking-[.2em] text-[#2E6A9E] uppercase">Sree Vivekananda Educational Society</p>
+                  <h1 className="mt-2 font-round text-[clamp(1.5rem,3vw,2.4rem)] font-extrabold leading-tight text-[#123A5E]">SREE SWAMY<br />VIVEKANANDA SCHOOL</h1>
+                  <p className="mt-2 text-[clamp(1.1rem,1.8vw,1.4rem)] font-bold text-[#1B7A3E]">{branch.streetName}</p>
+                  <p className="mt-1 text-[15px] text-black/70 leading-6">{branch.fullAddress}</p>
+                  <p className="mt-4 max-w-[400px] text-[14px] leading-6 text-[#3F5771] italic">{branch.description}</p>
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+                    className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#123A5E] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#0F2E4A] transition">
+                    <MapPin size={15} /> Get Directions <ExternalLink size={13} />
+                  </a>
+                </div>
+              </div>
+              {/* Right — Map */}
+              <div className="flex flex-col gap-3">
+                <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-2xl border-4 border-white shadow-lg hover:shadow-xl transition group">
+                  <div className="relative bg-[#E8EEF4] flex flex-col items-center justify-center gap-3 p-10 min-h-[280px]">
+                    <div className="absolute inset-0 bg-[url('/background.jpeg')] bg-cover bg-center opacity-20 rounded-2xl" />
+                    <div className="relative z-10 flex flex-col items-center gap-3 text-center">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow">
+                        <MapPin size={28} className="text-[#C62828]" />
+                      </div>
+                      <p className="font-bold text-[17px] text-[#123A5E]">{branch.mapLabel}</p>
+                      <p className="text-[13px] text-black/60">Pulivendla, Kadapa District,<br />Andhra Pradesh – 516390</p>
+                      <div className="mt-2 flex items-center gap-1.5 rounded-full bg-[#123A5E] px-4 py-1.5 text-[13px] font-semibold text-white group-hover:bg-[#0F2E4A] transition">
+                        <ExternalLink size={13} /> Open in Google Maps
+                      </div>
+                    </div>
+                  </div>
+                </a>
+                <p className="text-center text-[12px] text-black/45">Click to open in Google Maps</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* Faculty */}
+        <BranchFaculty />
+        {/* Bus Route */}
+        <BranchBusRoute stopName={branch.busStopName} />
+        <Admissions onEnquire={onEnquire} />
+      </>}
+    </PageShell>
+  );
+}
+
+const BRANCHES: Record<string, BranchInfo> = {
+  'shivalayam-street': {
+    title: 'Shivalayam Street Branch',
+    streetName: 'Shivalayam Street',
+    fullAddress: 'Shivalayam Street, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
+    description: 'Our flagship branch on Shivalayam Street brings CBSE-aligned education from Pre-School through High-School to the heart of Pulivendla, with experienced faculty and a nurturing environment.',
+    mapQuery: 'Shivalayam+Street+Pulivendla+Kadapa+Andhra+Pradesh',
+    mapLabel: 'Shivalayam Street Branch',
+    busStopName: 'Sivalayam Street',
+  },
+  'brahmanapalli-road': {
+    title: 'Brahmanapalli Road Branch',
+    streetName: 'Brahmanapalli Road',
+    fullAddress: 'Brahmanapalli Road, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
+    description: 'The Brahmanapalli Road branch offers a calm and focused learning environment, serving families across the Brahmanapalli area with dedicated teachers and holistic education.',
+    mapQuery: 'Brahmanapalli+Road+Pulivendla+Kadapa+Andhra+Pradesh',
+    mapLabel: 'Brahmanapalli Road Branch',
+    busStopName: 'Brahmanapalle Road',
+  },
+  'parnapalli-road': {
+    title: 'Parnapalli Road Branch',
+    streetName: 'Parnapalli Road',
+    fullAddress: 'Parnapalli Road, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
+    description: 'The Parnapalli Road branch extends our mission of inspiring growth to the Parnapalli area, offering the same high standards of CBSE education and character development.',
+    mapQuery: 'Parnapalli+Road+Pulivendla+Kadapa+Andhra+Pradesh',
+    mapLabel: 'Parnapalli Road Branch',
+    busStopName: 'Nagarigutta',
+  },
+};
+
+function BranchPage({ params }: { params: { slug: string } }) {
+  const info = BRANCHES[params.slug];
+  if (!info) return <NotFound />;
+  return <BranchPageTemplate branch={info} />;
+}
+
+function Router() { return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/faculty" component={FacultyPage} /><Route path="/bus-routes" component={BusRoutesPage} /><Route path="/branch/:slug" component={BranchPage} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>; }
 function RoutedErrorBoundary({ children }: { children: ReactNode }) { const [location] = useLocation(); return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>; }
 function App() { return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>; }
 export default App;
