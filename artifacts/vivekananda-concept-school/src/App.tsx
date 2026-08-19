@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, Bus, Check, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Search, Send, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, BookHeart, Bus, Check, ChevronDown, ChevronRight, FlaskConical, GraduationCap, HeartHandshake, Instagram, Mail, MapPin, Menu, Palette, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -110,7 +110,12 @@ const navItems = [
   ['Home', '#top'], ['About Us', '#about'], ['Faculty', '/faculty'], ['Results', '#results'], ['Facilities', '#media'],
   ['Gallery', '#gallery'], ['Blogs', '#blogs'], ['Contact Us', '#contact'],
 ] as const;
-const headerNavItems = navItems.filter(([label]) => label !== 'Blogs' && label !== 'Contact Us');
+/* The header carries the six-item nav from the design; `navItems` above stays
+   the fuller list the footer prints. */
+const headerNavItems = [
+  ['Home', '#top'], ['About Us', '#about'], ['Academics', '#results'], ['Faculty', '/faculty'],
+  ['Facilities', '#media'], ['Gallery', '#gallery'],
+] as const;
 
 function useReveals() {
   useEffect(() => {
@@ -121,83 +126,223 @@ function useReveals() {
 }
 
 function Logo({ footer = false }: { footer?: boolean }) {
-  return <a href="#top" className={`flex items-center gap-3 ${footer ? 'text-white' : 'text-black'}`} data-testid="link-logo">
-    <img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="h-16 w-16 shrink-0 rounded-full object-cover" />
-    <span className="leading-[.9]"><b className="block text-[22px] tracking-[.06em]">VIVEKANANDA</b><small className={`text-[15px] tracking-[.18em] ${footer ? 'text-[#FFFFFF]' : 'text-black'}`}>CONCEPT SCHOOL</small></span>
-    <span className={`hidden h-10 w-px sm:block ${footer ? 'bg-white/40' : 'bg-[#1C2A37]/30'}`} aria-hidden="true" />
-    <span className="hidden text-[15px] font-bold tracking-[.18em] sm:block">PULIVENDLA</span>
+  return <a href="#top" className="flex shrink-0 items-center gap-3.5" data-testid="link-logo">
+    <img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="h-[64px] w-[64px] shrink-0 rounded-full object-cover sm:h-[82px] sm:w-[82px]" />
+    <span className="leading-none">
+      <b className={`block font-round text-[clamp(1.05rem,1.8vw,1.65rem)] font-extrabold tracking-[.045em] ${footer ? 'text-white' : 'text-[#123A5E]'}`}>VIVEKANANDA</b>
+      <small className={`mt-[6px] block text-[clamp(.6rem,.85vw,.86rem)] font-semibold tracking-[.26em] sm:tracking-[.3em] ${footer ? 'text-white/70' : 'text-[#7C8B99]'}`}>CONCEPT SCHOOL</small>
+    </span>
   </a>;
 }
 
 function Header({ onEnquire }: { onEnquire: () => void }) {
   const [open, setOpen] = useState(false);
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
+  /* A route of its own owns the highlight outright; on the home page the
+     highlight follows whichever section link was last taken. */
+  const [active, setActive] = useState(() => location === '/' ? '#top' : location);
+  useEffect(() => { setActive(location === '/' ? '#top' : location); }, [location]);
   const go = (href: string) => {
     setOpen(false);
+    setActive(href);
     if (!href.startsWith('#')) { navigate(href); window.scrollTo({ top: 0 }); return; }
     const target = document.querySelector(href);
     if (target) { target.scrollIntoView({ behavior: 'smooth' }); return; }
     /* The section is on the home page and we are not on it — the anchor would
-       otherwise do nothing at all from /facilities. Route home first, then
+       otherwise do nothing at all from /faculty. Route home first, then
        scroll on the frame after the sections have mounted. */
     navigate('/');
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })));
   };
-  return <header className="relative z-30 bg-white">
-    <div className="container-wide">
-      <div className="flex min-h-[82px] items-center justify-between gap-4">
-        <Logo />
-        <div className="hidden items-center gap-6 md:flex">
-          <a href="tel:+918500045678" className="flex items-center gap-2 text-[15px] text-black" data-testid="link-header-phone"><Phone size={13} className="text-[#8E140E]" /> +91 85000 45678 / 85004 95678</a>
-          <button onClick={onEnquire} className="rounded-full border border-[#8E140E] px-5 py-2 text-[15px] font-semibold text-[#8E140E] hover:bg-[#8E140E] hover:text-white" data-testid="button-header-enquiry">ADMISSION ENQUIRY</button>
-        </div>
-        <button onClick={() => setOpen(!open)} className="rounded-sm p-2 text-[#8E140E] md:hidden" aria-label="Toggle menu" data-testid="button-mobile-menu">{open ? <X size={23} /> : <Menu size={23} />}</button>
-      </div>
-      <div className="hidden border-t border-[#1F2838] md:block">
-        <nav className="flex min-h-[53px] items-center justify-between gap-2" aria-label="Primary navigation">
-          {headerNavItems.map(([label, href]) => <a key={href} href={href} onClick={(e) => { e.preventDefault(); go(href); }} className="nav-link whitespace-nowrap py-2 text-[14px] font-medium text-black hover:text-[#8E140E]" data-testid={`link-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}
-        </nav>
+  return <header className="relative z-30 border-b border-[#EFE7D7] bg-white">
+    <div className="container-hero flex min-h-[80px] items-center justify-between gap-4 sm:min-h-[104px] sm:gap-6">
+      <Logo />
+      <nav className="hidden items-center gap-[clamp(1.1rem,2.6vw,2.6rem)] lg:flex" aria-label="Primary navigation">
+        {headerNavItems.map(([label, href]) => {
+          const on = active === href;
+          return <a key={href} href={href} onClick={(e) => { e.preventDefault(); go(href); }} aria-current={on ? 'page' : undefined} className={`relative whitespace-nowrap pb-[6px] text-[clamp(.9rem,1.05vw,1.06rem)] font-semibold transition-colors ${on ? 'text-[#1B7A3E]' : 'text-[#153B5B] hover:text-[#1B7A3E]'}`} data-testid={`link-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>
+            {label}
+            <span className={`absolute -bottom-[3px] left-0 h-[3px] rounded-full bg-[#1B7A3E] transition-all duration-300 ${on ? 'w-full opacity-100' : 'w-0 opacity-0'}`} />
+          </a>;
+        })}
+      </nav>
+      <div className="flex items-center gap-2">
+        <button onClick={onEnquire} className="hidden rounded-full border-2 border-[#123A5E] px-[clamp(1.3rem,2.1vw,2.1rem)] py-[11px] text-[clamp(.9rem,1.05vw,1.06rem)] font-semibold text-[#123A5E] transition hover:bg-[#123A5E] hover:text-white md:block" data-testid="button-header-enquiry">Enquire Now</button>
+        <button onClick={() => setOpen(!open)} className="rounded-md p-2 text-[#153B5B] lg:hidden" aria-label="Toggle menu" data-testid="button-mobile-menu">{open ? <X size={24} /> : <Menu size={24} />}</button>
       </div>
     </div>
-    {open && <div className="border-t border-[#1F2838] bg-[#FFFFFF] px-5 py-3 md:hidden"><nav>{headerNavItems.map(([label, href]) => <a key={href} href={href} onClick={(e) => { e.preventDefault(); go(href); }} className="flex items-center justify-between border-b border-[#1F2838] py-3 text-sm font-semibold text-black" data-testid={`link-mobile-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}<ChevronRight size={15} /></a>)}</nav><a href="tel:+918500045678" className="mt-4 flex items-center gap-2 text-sm text-[#8E140E]" data-testid="link-mobile-phone"><Phone size={14} /> +91 85000 45678</a><button onClick={onEnquire} className="mt-3 w-full rounded-full bg-[#8E140E] py-3 text-xs font-bold text-white" data-testid="button-mobile-enquiry">ADMISSION ENQUIRY</button></div>}
+    {open && <div className="border-t border-[#EFE7D7] bg-white px-5 py-3 lg:hidden"><nav>{headerNavItems.map(([label, href]) => <a key={href} href={href} onClick={(e) => { e.preventDefault(); go(href); }} className="flex items-center justify-between border-b border-[#EFE7D7] py-3 text-[15px] font-semibold text-[#153B5B]" data-testid={`link-mobile-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}<ChevronRight size={15} /></a>)}</nav><a href="tel:+918500045678" className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#1B7A3E]" data-testid="link-mobile-phone"><Phone size={14} /> +91 85000 45678</a><button onClick={onEnquire} className="mt-3 w-full rounded-full bg-[#1B7A3E] py-3 text-sm font-bold text-white" data-testid="button-mobile-enquiry">Enquire Now</button></div>}
   </header>;
 }
 
-function Hero() {
-  return <section id="top" className="bg-white">
-    <div className="grid min-h-[365px] md:h-[550px] md:grid-cols-3">
-      <div className="relative min-h-[190px] overflow-hidden bg-[#1F2838] sm:min-h-[275px] md:h-full">
-        <img src="/campus-courtyard.jpg" alt="Vivekananda Concept School campus" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#1F2838]/30 to-transparent" />
-        <div className="absolute bottom-4 left-5 rounded bg-white/90 px-3 py-2 text-[13px] font-bold tracking-[.14em] text-[#8E140E]">A CAMPUS BUILT FOR CHILDREN</div>
-      </div>
-      <div className="hero-pattern relative flex items-center overflow-hidden px-6 py-10 sm:px-8 sm:py-12">
-        <div className="absolute -left-16 top-[-38px] h-[310px] w-[90px] rotate-[27deg] bg-[#8E140E]" />
-        <div className="absolute -right-12 bottom-[-60px] h-[330px] w-[60px] rotate-[26deg] bg-[#8E140E]" />
-        <div className="relative z-10 max-w-[480px] text-white">
-          <p className="text-[14px] font-bold tracking-[.25em] text-[#FFFFFF]">WELCOME TO OUR SCHOOL</p>
-          <h1 className="mt-4 font-sans text-[clamp(1.9rem,3.4vw,3rem)] font-semibold leading-[1.08]">Vivekananda Concept School</h1>
-          <p className="mt-3 font-display text-[clamp(1.4rem,2.2vw,1.9rem)] italic text-[#FFFFFF]">PULIVENDLA</p>
-          <p className="mt-3 max-w-[315px] text-[17px] leading-6 text-white/85">A place where every child learns, grows and shines.</p>
-        </div>
-      </div>
-      <div className="relative min-h-[190px] overflow-hidden bg-[#1F2838] sm:min-h-[275px] md:h-full">
-        <img src="/making-lab.jpg" alt="Vivekananda Concept School students" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#1F2838]/30 to-transparent" />
-        <div className="absolute bottom-4 left-5 rounded bg-white/90 px-3 py-2 text-[13px] font-bold tracking-[.14em] text-[#8E140E]">HANDS-ON LEARNING</div>
-      </div>
-    </div>
-    <div className="relative h-8 overflow-hidden bg-white"><div className="absolute left-0 top-0 h-8 w-24 bg-[#8E140E]" style={{ clipPath: 'polygon(0 0, 100% 0, 71% 50%, 100% 100%, 0 100%, 27% 50%)' }} /><div className="hero-dots absolute right-0 top-0 h-8 w-24 opacity-50" /></div>
-  </section>;
+/* ---------------------------------------------------------------- hero art */
+
+/* One blobby outline drawn in a 0–100 box, reused twice: as the clip that
+   gives the photo its cloud shape, and as the dashed ring around it. */
+const HERO_BLOB = 'M50 2.5 C64 0.5 76.5 6 82.5 14 C93.5 12.5 100 22 98.5 34 C100 46 96 56.5 91.5 63 C96 74 89 85.5 77.5 87.5 C71.5 96.5 57.5 99.5 47.5 95 C35.5 100 22.5 96 17.5 86.5 C6 85 0.5 74 4 64 C0.5 53 2.5 41 8.5 35 C5 20 15.5 8.5 27.5 11 C33.5 4 42 1.5 50 2.5 Z';
+
+const LEAF_PATH = 'M3 30 C 18 6, 56 -4, 97 10 C 78 44, 34 56, 3 30 Z';
+
+function Leaf({ className = '', style, color = '#4C9A3F' }: { className?: string; style?: CSSProperties; color?: string }) {
+  return <svg viewBox="0 0 100 56" className={className} style={style} aria-hidden="true">
+    <path d={LEAF_PATH} fill={color} />
+    <path d="M6 30 C 34 24, 66 17, 95 11" fill="none" stroke="rgba(255,255,255,.38)" strokeWidth="2.4" strokeLinecap="round" />
+  </svg>;
 }
 
-function Heading({ title, accent }: { title: string; accent?: string }) {
-  return <div className="reveal flex flex-col items-center"><h2 className="section-heading text-center text-[clamp(1.85rem,3.3vw,2.5rem)]">{title} {accent && <em>{accent}</em>}</h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div></div>;
+function Bloom({ className = '', style, petal = '#F0863A', core = '#F7C948', petals = 6 }: { className?: string; style?: CSSProperties; petal?: string; core?: string; petals?: number }) {
+  return <svg viewBox="0 0 60 60" className={className} style={style} aria-hidden="true">
+    {Array.from({ length: petals }, (_, i) => <ellipse key={i} cx="30" cy="13.5" rx="7.5" ry="12.5" fill={petal} transform={`rotate(${(360 / petals) * i} 30 30)`} />)}
+    <circle cx="30" cy="30" r="7" fill={core} />
+  </svg>;
+}
+
+/* Leaves fanned out of one corner. The numbers are percentages of the cluster
+   box, so the whole bouquet scales with the hero rather than the viewport. */
+const LEAF_CLUSTER = [
+  { left: -8, top: 46, w: 62, rot: -32, color: '#3E8F3B' },
+  { left: 2, top: 22, w: 52, rot: -66, color: '#57A84A' },
+  { left: -4, top: 68, w: 54, rot: 8, color: '#2F7C33' },
+  { left: 24, top: 8, w: 44, rot: -88, color: '#6BBB57' },
+  { left: 30, top: 52, w: 50, rot: -18, color: '#4C9A3F' },
+  { left: 18, top: 82, w: 46, rot: 24, color: '#3E8F3B' },
+  { left: 48, top: 30, w: 38, rot: -52, color: '#7CC763' },
+  { left: 52, top: 72, w: 40, rot: 4, color: '#57A84A' },
+];
+
+function Foliage({ side }: { side: 'left' | 'right' }) {
+  return <div className={`pointer-events-none absolute hidden sm:block ${side === 'left' ? '-bottom-14 -left-8 h-[min(34vw,320px)] w-[min(24vw,280px)]' : '-bottom-20 -right-6 h-[min(28vw,260px)] w-[min(19vw,220px)] -scale-x-100'}`} aria-hidden="true">
+    {LEAF_CLUSTER.map((leaf, i) => <Leaf key={i} className="absolute drop-shadow-[0_4px_6px_rgba(31,70,40,.08)]" color={leaf.color} style={{ left: `${leaf.left}%`, top: `${leaf.top}%`, width: `${leaf.w}%`, transform: `rotate(${leaf.rot}deg)` }} />)}
+    <Bloom className="absolute" style={{ left: '58%', top: '14%', width: '15%' }} />
+    <Bloom className="absolute" style={{ left: '6%', top: '8%', width: '11%' }} petal="#F5A623" core="#E8722F" petals={5} />
+  </div>;
+}
+
+/* The doodles floating around the photo. Positions are percentages of the
+   photo frame so they keep their relationship to it at any width. */
+function HeroDoodles() {
+  return <div className="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
+    <svg viewBox="0 0 64 44" className="doodle-float absolute hidden sm:block left-[-12%] top-[3%] w-[13%]">
+      <path d="M62 2 L2 24 L24 30 Z" fill="#FFC94D" />
+      <path d="M62 2 L24 30 L28 42 L37 33 Z" fill="#E2911C" />
+      <path d="M62 2 L24 30 L37 33 Z" fill="#F5B02E" />
+    </svg>
+    <svg viewBox="0 0 90 80" className="absolute hidden sm:block left-[-8%] top-[16%] w-[16%]">
+      <path d="M6 4 C 34 6, 56 20, 62 42 C 68 64, 50 76, 30 70" fill="none" stroke="#7FA8D4" strokeWidth="2.2" strokeDasharray="5 7" strokeLinecap="round" />
+    </svg>
+    <svg viewBox="0 0 64 84" className="doodle-drift absolute hidden sm:block left-[-14%] top-[40%] w-[11%]">
+      <path d="M32 2 C48 2 60 15 60 29 C60 43 46 55 32 61 C18 55 4 43 4 29 C4 15 16 2 32 2 Z" fill="#F2B33D" />
+      <path d="M32 2 C24 12 20 21 20 29 C20 41 26 53 32 61 C38 53 44 41 44 29 C44 21 40 12 32 2 Z" fill="#E86A4E" />
+      <path d="M32 2 C36 13 38 21 38 29 C38 41 35 53 32 61 C29 53 26 41 26 29 C26 21 28 13 32 2 Z" fill="#3FA9A0" />
+      <path d="M25 61 L39 61 L36 69 L28 69 Z" fill="none" stroke="#B5713A" strokeWidth="1.6" />
+      <rect x="26" y="69" width="12" height="10" rx="2.5" fill="#B5713A" />
+    </svg>
+    <Bloom className="doodle-spin absolute hidden sm:block left-[-9%] top-[63%] w-[7%]" petal="#F0863A" core="#F7C948" />
+    <Bloom className="doodle-float absolute left-[62%] top-[-8%] w-[6%]" petal="#F7C948" core="#E8A020" petals={7} />
+    <svg viewBox="0 0 40 30" className="absolute left-[57%] top-[-3%] w-[8%]">
+      <path d="M20 24 C 8 24, 4 12, 14 10 C 20 -2, 34 2, 34 12 C 40 16, 36 26, 26 24 Z" fill="#57A84A" opacity=".85" />
+    </svg>
+    <svg viewBox="0 0 120 62" className="doodle-drift absolute hidden sm:block right-[-6%] top-[-4%] w-[19%]">
+      <g fill="#CBE2F7"><ellipse cx="34" cy="36" rx="25" ry="17" /><ellipse cx="63" cy="28" rx="29" ry="21" /><ellipse cx="92" cy="38" rx="21" ry="15" /><rect x="14" y="38" width="94" height="16" rx="8" /></g>
+    </svg>
+    <svg viewBox="0 0 48 40" className="doodle-float absolute hidden sm:block right-[-8%] top-[26%] w-[7%]">
+      <g fill="#5B9BE0"><path d="M24 20 C14 4 2 6 4 16 C5 24 16 24 24 20 Z" /><path d="M24 20 C34 4 46 6 44 16 C43 24 32 24 24 20 Z" /><path d="M24 20 C16 30 8 34 8 27 C8 21 17 19 24 20 Z" /><path d="M24 20 C32 30 40 34 40 27 C40 21 31 19 24 20 Z" /></g>
+      <rect x="23" y="9" width="2" height="23" rx="1" fill="#2E6FB5" />
+    </svg>
+    <Bloom className="doodle-spin absolute hidden sm:block bottom-[6%] right-[-10%] w-[8%]" petal="#F0863A" core="#F7C948" />
+    <svg viewBox="0 0 24 24" className="absolute left-[46%] top-[-6%] w-[2.6%]"><path d="M12 2 V22 M2 12 H22" stroke="#7FA8D4" strokeWidth="2.6" strokeLinecap="round" /></svg>
+    <svg viewBox="0 0 24 24" className="absolute right-[4%] top-[46%] w-[2.2%]"><path d="M12 2 V22 M2 12 H22" stroke="#F5B02E" strokeWidth="2.6" strokeLinecap="round" /></svg>
+    <svg viewBox="0 0 40 40" className="absolute hidden sm:block left-[-3%] top-[30%] w-[4%]"><circle cx="8" cy="8" r="3" fill="#F5B02E" /><circle cx="24" cy="16" r="2.4" fill="#E8722F" /><circle cx="12" cy="28" r="2" fill="#57A84A" /></svg>
+  </div>;
+}
+
+/* ------------------------------------------------------------------- hero */
+
+const HERO_SLIDES = [
+  { src: '/making-lab.jpg', alt: 'Children building together in the activity room', position: '52% 48%' },
+  { src: '/smartclass.jpeg', alt: 'A smart classroom lesson at Vivekananda Concept School', position: '50% 55%' },
+  { src: '/campus-courtyard.jpg', alt: 'Students walking through the school courtyard', position: '50% 62%' },
+  { src: '/athletics-field.jpg', alt: 'Students on the athletics field', position: '50% 50%' },
+] as const;
+
+const HERO_FEATURES = [
+  { Icon: GraduationCap, tint: '#E7F2E2', ink: '#2F7D32', lines: ['Play Based', 'Learning'] },
+  { Icon: Palette, tint: '#FBEEDF', ink: '#DD7B27', lines: ['Creative', 'Classrooms'] },
+  { Icon: FlaskConical, tint: '#E4EEFB', ink: '#2F6FBE', lines: ['Experiential', 'Activities'] },
+  { Icon: BookHeart, tint: '#FBE7E3', ink: '#CE4A3B', lines: ['Values &', 'Life Skills'] },
+  { Icon: HeartHandshake, tint: '#F6F2DA', ink: '#8A9A26', lines: ['Caring', 'Environment'] },
+] as const;
+
+function Hero() {
+  const [slide, setSlide] = useState(0);
+  useEffect(() => {
+    const timer = window.setInterval(() => setSlide((current) => (current + 1) % HERO_SLIDES.length), 6000);
+    return () => window.clearInterval(timer);
+  }, []);
+  return <>
+    <section id="top" className="hero-cream relative overflow-hidden">
+      <svg width="0" height="0" className="absolute" aria-hidden="true"><defs><clipPath id="hero-blob" clipPathUnits="objectBoundingBox"><path d={HERO_BLOB} transform="scale(.01)" /></clipPath></defs></svg>
+      <Foliage side="left" />
+      <Foliage side="right" />
+
+      <div className="container-hero relative z-10 grid grid-cols-1 items-center gap-8 pb-[118px] pt-8 lg:grid-cols-[minmax(0,41%)_minmax(0,59%)] lg:gap-6 lg:pb-[96px] lg:pt-6">
+        <div className="min-w-0 max-w-[565px]">
+          <p className="text-[clamp(.72rem,.9vw,.88rem)] font-bold tracking-[.22em] text-[#2F7D46]">WELCOME TO <span className="font-round font-extrabold tracking-[.045em] text-[#123A5E]">VIVEKANANDA</span> <span className="font-semibold tracking-[.26em] text-[#7C8B99]">CONCEPT SCHOOL</span></p>
+          <span className="mt-2 block h-[4px] w-[52px] rounded-full bg-[#F0B429]" />
+          <h1 className="mt-5 font-round text-[clamp(2.05rem,3.7vw,3.5rem)] font-extrabold leading-[1.08] tracking-[-.018em] text-[#123A5E]">
+            A Place to Learn,<br /><span className="text-[#1B7A3E]">Grow &amp; Thrive</span>
+          </h1>
+          <p className="mt-5 max-w-[385px] text-[clamp(.98rem,1.15vw,1.18rem)] leading-[1.55] text-[#5A6A78]">We believe in providing a joyful learning experience that encourages curiosity, creativity and confidence.</p>
+        </div>
+
+        <div className="relative min-w-0">
+          <HeroDoodles />
+          <div className="relative mx-auto aspect-[4/2.6] w-full max-w-[790px]">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full scale-[1.035]" aria-hidden="true">
+              <path d={HERO_BLOB} fill="none" stroke="#B7DDB0" strokeWidth={2} strokeDasharray="6 8" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+            </svg>
+            {HERO_SLIDES.map((item, i) => <img key={item.src + i} src={item.src} alt={i === slide ? item.alt : ''} className={`hero-blob absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? 'opacity-100' : 'opacity-0'}`} style={{ objectPosition: item.position }} />)}
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    {/* The strip rides up over the hero the way it does in the design, so it
+        keeps its own stacking context rather than living inside the section. */}
+    <div className="relative z-20 -mt-[100px] pb-8">
+      <div className="container-hero">
+        <div className="grid grid-cols-1 gap-y-6 rounded-[26px] bg-white px-6 py-7 shadow-[0_18px_44px_-18px_rgba(18,58,94,.28)] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-0 lg:px-4 lg:py-6">
+          {HERO_FEATURES.map(({ Icon, tint, ink, lines }, i) => <div key={lines.join(' ')} className={`flex items-center justify-center gap-3.5 px-3 lg:px-2 ${i === 0 ? '' : 'lg:border-l lg:border-[#EDEAE1]'}`}>
+            <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: tint }}><Icon size={25} style={{ color: ink }} /></span>
+            <span className="text-[clamp(.9rem,1.02vw,1.04rem)] font-medium leading-[1.35] text-[#1F3B52]">{lines[0]}<br />{lines[1]}</span>
+          </div>)}
+        </div>
+      </div>
+    </div>
+  </>;
+}
+
+/* Wherever the school is named as a heading it is set exactly as the header sets it:
+   the crest, VIVEKANANDA in the header navy, CONCEPT SCHOOL in the header grey. */
+function SchoolName({ size = 'md' }: { size?: 'sm' | 'md' }) {
+  const small = size === 'sm';
+  return <span className="flex items-center gap-3">
+    <img src="/logo.jpeg" alt="Vivekananda Concept School logo" className={`shrink-0 rounded-full object-cover ${small ? 'h-[58px] w-[58px]' : 'h-[74px] w-[74px]'}`} />
+    <span className="leading-none">
+      <b className={`block font-round font-extrabold tracking-[.045em] text-[#123A5E] ${small ? 'text-[clamp(1.15rem,2.4vw,1.5rem)]' : 'text-[clamp(1.45rem,2.9vw,2.1rem)]'}`}>VIVEKANANDA</b>
+      <small className={`mt-[6px] block font-semibold tracking-[.26em] text-[#7C8B99] ${small ? 'text-[clamp(.6rem,1.1vw,.76rem)]' : 'text-[clamp(.68rem,1.3vw,.95rem)]'}`}>CONCEPT SCHOOL</small>
+    </span>
+  </span>;
+}
+
+function Heading({ title, accent }: { title?: string; accent?: string }) {
+  return <div className="reveal flex flex-col items-center"><h2 className="section-heading text-center text-[clamp(1.85rem,3.3vw,2.5rem)]">{title}{title && ' '}{accent && <em>{accent}</em>}</h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div></div>;
 }
 
 function Intro() {
-  return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#8E140E] opacity-70" /><div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
-    <div className="reveal"><h2 className="font-sans text-[clamp(1.9rem,3.3vw,2.5rem)] font-semibold leading-tight tracking-[.04em] text-black">Welcome to Vivekananda Concept School</h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div><p className="mt-5 max-w-[470px] text-[17px] leading-6 text-black">Welcome to Vivekananda Concept School! Igniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
+  return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" /><div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
+    <div className="reveal"><h2><SchoolName /></h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div><p className="mt-5 max-w-[470px] text-[17px] leading-6 text-black">Igniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
     {/* The quote is set into the artwork rather than laid over it, so the alt
         text has to carry the whole line and the attribution — to a screen
         reader or a crawler this is otherwise a blank decorative panel. And no
@@ -222,7 +367,7 @@ const resultImages = [
   { src: '/results-3.jpeg', caption: 'More Achievers — SSC Results 2026' },
 ];
 function Results() {
-  return <section id="results" className="relative py-6 md:py-9"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[900px] grid-cols-3 gap-2 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">{resultImages.map((item, index) => <a key={item.src} href={item.src} target="_blank" rel="noreferrer" className="reveal school-card block overflow-hidden rounded border border-[#1F2838] bg-white shadow-[0_2px_5px_rgba(31,40,56,.18)]" data-testid={`card-result-${index + 1}`}><img src={item.src} alt={item.caption} className={`w-full object-cover object-center aspect-[1310/1222] ${index > 0 ? '' : 'sm:aspect-auto sm:h-auto'}`} /><p className="px-1 py-2 text-center text-[10px] font-semibold leading-[1.3] text-[#8E140E] sm:px-4 sm:py-4 sm:text-[18px] sm:leading-normal">{item.caption}</p></a>)}</div></div></section>;
+  return <section id="results" className="relative py-6 md:py-9"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[900px] grid-cols-3 gap-2 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">{resultImages.map((item, index) => <a key={item.src} href={item.src} target="_blank" rel="noreferrer" className="reveal school-card block overflow-hidden rounded border border-[#1F2838] bg-white shadow-[0_2px_5px_rgba(31,40,56,.18)]" data-testid={`card-result-${index + 1}`}><img src={item.src} alt={item.caption} className={`w-full object-cover object-center aspect-[1310/1222] ${index > 0 ? '' : 'sm:aspect-auto sm:h-auto'}`} /><p className="px-1 py-2 text-center text-[10px] font-semibold leading-[1.3] text-[#0F4C5C] sm:px-4 sm:py-4 sm:text-[18px] sm:leading-normal">{item.caption}</p></a>)}</div></div></section>;
 }
 
 /* Each card shows either a line icon or a photograph in the same dashed circle,
@@ -263,13 +408,13 @@ function BusRoutes() {
     <div className="rounded-2xl border-2 border-dashed border-[#1C2A37]/35 bg-white/85 p-5 shadow-[0_4px_12px_rgba(31,40,56,.12)] sm:p-7">
       <p className="mx-auto max-w-[460px] text-center text-[15px] leading-6 text-black/75">Type your village or area below. If it is on one of our three routes, our bus can pick your child up and drop them home.</p>
 
-      <div className="mx-auto mt-5 flex max-w-[420px] items-center gap-2 rounded-full border-2 border-[#1C2A37]/30 bg-white px-4 py-2.5 focus-within:border-[#8E140E]">
-        <Search size={17} className="shrink-0 text-[#8E140E]" aria-hidden="true" />
+      <div className="mx-auto mt-5 flex max-w-[420px] items-center gap-2 rounded-full border-2 border-[#1C2A37]/30 bg-white px-4 py-2.5 focus-within:border-[#0F4C5C]">
+        <Search size={17} className="shrink-0 text-[#0F4C5C]" aria-hidden="true" />
         <input value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Search your area…" aria-label="Search for your village or area" className="w-full bg-transparent text-[15px] text-black outline-none placeholder:text-black/45" data-testid="input-bus-area-search" />
-        {query && <button type="button" onClick={() => setQuery('')} aria-label="Clear search" className="shrink-0 rounded-full p-1 text-black/60 hover:text-[#8E140E]" data-testid="button-bus-search-clear"><X size={15} /></button>}
+        {query && <button type="button" onClick={() => setQuery('')} aria-label="Clear search" className="shrink-0 rounded-full p-1 text-black/60 hover:text-[#0F4C5C]" data-testid="button-bus-search-clear"><X size={15} /></button>}
       </div>
 
-      {searching && <p className={`mx-auto mt-4 max-w-[520px] rounded-xl px-4 py-3 text-center text-[15px] leading-6 ${found ? 'bg-[#8E140E]/10 text-[#8E140E]' : 'bg-[#1F2838]/8 text-black'}`} role="status" aria-live="polite" data-testid="text-bus-search-result">
+      {searching && <p className={`mx-auto mt-4 max-w-[520px] rounded-xl px-4 py-3 text-center text-[15px] leading-6 ${found ? 'bg-[#0F4C5C]/10 text-[#0F4C5C]' : 'bg-[#1F2838]/8 text-black'}`} role="status" aria-live="polite" data-testid="text-bus-search-result">
         {found
           ? <><Check size={16} className="mr-1 inline align-[-2px]" aria-hidden="true" />Good news — our school bus reaches {found === 1 ? 'this area' : 'these areas'}. Board at the {matches.map((route) => route.stop).join(' or ')} route{matches.length > 1 ? 's' : ''}.</>
           : <>We do not have “{query.trim()}” on a route yet. Call us on <a href="tel:+918500045678" className="font-semibold underline">+91 85000 45678</a> and we will see what can be arranged.</>}
@@ -277,7 +422,7 @@ function BusRoutes() {
 
       <div className="mt-6 grid gap-5 sm:grid-cols-3">
         {(searching ? matches : busRoutes.map((route) => ({ stop: route.stop, hits: route.areas }))).map((route) => <div key={route.stop} data-testid={`card-bus-route-${route.stop.toLowerCase().replaceAll(' ', '-')}`}>
-          <h4 className="flex items-start gap-1.5 text-[15px] font-semibold leading-5 text-[#8E140E]"><Bus size={15} className="mt-0.5 shrink-0" aria-hidden="true" />Sree Swamy Vivekananda School, {route.stop}</h4>
+          <h4 className="flex items-start gap-1.5 text-[15px] font-semibold leading-5 text-[#0F4C5C]"><Bus size={15} className="mt-0.5 shrink-0" aria-hidden="true" />Sree Swamy Vivekananda School, {route.stop}</h4>
           <ul className="mt-2 space-y-0.5 text-[14px] leading-5 text-black/80">
             {route.hits.map((area) => <li key={area}>{area}</li>)}
           </ul>
@@ -289,16 +434,16 @@ function BusRoutes() {
 
 function Facilities() {
   const [, navigate] = useLocation();
-  return <section id="media" className="py-6 md:py-9"><div className="container-wide">
-    <Heading title="Our" accent="Facilities" />
-    <div className="mx-auto mt-8 grid max-w-[880px] grid-cols-2 gap-x-4 gap-y-7 sm:gap-x-12 sm:gap-y-10">
+  return <section id="media" className="py-5 md:py-7"><div className="container-wide">
+    <Heading accent="Facilities" />
+    <div className="mx-auto mt-6 grid max-w-[760px] grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-10 sm:gap-y-8">
       {facilities.map(({ icon: Icon, image, contain, title, copy }, index) => <article key={title} className="reveal flex flex-col items-center text-center" data-testid={`card-facility-${index + 1}`}>
-        <span className={`facility-circle grid h-20 w-20 place-items-center overflow-hidden rounded-full p-1 sm:h-32 sm:w-32 ${index % 2 === 0 ? 'text-[#8E140E]' : 'text-black'}`}>{image ? <img src={image} alt="" className={`h-full w-full rounded-full ${contain ? 'object-contain p-2' : 'object-cover'}`} /> : Icon ? <Icon size={54} /> : null}</span>
-        <h3 className="mt-3 font-sans text-[15px] font-medium leading-[1.25] text-black sm:mt-4 sm:text-[24px] sm:leading-normal">{title}</h3>
-        <p className="mt-2 max-w-[320px] text-[12px] leading-[1.4] text-black/75 sm:text-[16px] sm:leading-6">{copy}</p>
+        <span className={`facility-circle grid h-16 w-16 place-items-center overflow-hidden rounded-full p-1 sm:h-24 sm:w-24 ${index % 2 === 0 ? 'text-[#0F4C5C]' : 'text-black'}`}>{image ? <img src={image} alt="" className={`h-full w-full rounded-full ${contain ? 'object-contain p-2' : 'object-cover'}`} /> : Icon ? <Icon size={40} /> : null}</span>
+        <h3 className="mt-3 font-sans text-[14px] font-medium leading-[1.25] text-black sm:text-[19px] sm:leading-snug">{title}</h3>
+        <p className="mt-1.5 max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[13.5px] sm:leading-[1.5]">{copy}</p>
         {/* A real anchor so it can be opened in a new tab or read as a link,
             with the click intercepted for a client-side route. */}
-        {index === 0 && <a href="/bus-routes" onClick={(event) => { event.preventDefault(); navigate('/bus-routes'); window.scrollTo({ top: 0 }); }} className="mt-3 text-[12px] font-semibold leading-[1.3] text-[#8E140E] underline decoration-dotted underline-offset-4 hover:text-black sm:text-[15px]" data-testid="link-bus-routes">Check if our bus comes to your area →</a>}
+        {index === 0 && <a href="/bus-routes" onClick={(event) => { event.preventDefault(); navigate('/bus-routes'); window.scrollTo({ top: 0 }); }} className="mt-3 text-[12px] font-semibold leading-[1.3] text-[#0F4C5C] underline decoration-dotted underline-offset-4 hover:text-black sm:text-[13px]" data-testid="link-bus-routes">Check if our bus comes to your area →</a>}
       </article>)}
     </div>
   </div></section>;
@@ -306,7 +451,7 @@ function Facilities() {
 
 const gallery = ['/making-lab.jpg', '/campus-courtyard.jpg', '/athletics-field.jpg', '/campus-courtyard.jpg', '/making-lab.jpg', '/athletics-field.jpg'];
 const galleryFrames = [
-  { shape: 'g-shape-arch', colour: '#8E140E' },
+  { shape: 'g-shape-arch', colour: '#0F4C5C' },
   { shape: 'g-shape-arch', colour: '#1C2A37' },
   { shape: 'g-shape-arch', colour: '#E0A93B' },
   { shape: 'g-shape-arch', colour: '#2F7D6E' },
@@ -352,8 +497,8 @@ function StoryVideo() {
 
 function Gallery() {
   return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><div className="container-wide"><Heading title="PHOTO" accent="GALLERY" /><div className="mx-auto mt-7 grid max-w-[1120px] items-center gap-8 md:grid-cols-[210px_1fr]">
-    <div className="reveal relative mx-auto w-full max-w-[210px] overflow-hidden rounded-2xl border-[5px] border-white bg-[#1F2838] shadow-[0_10px_26px_rgba(31,40,56,.2)]"><div className="relative aspect-[9/16] overflow-hidden rounded-xl"><StoryVideo /></div></div>
-    <div className="grid grid-cols-2 gap-x-5 gap-y-6 md:grid-cols-3">{gallery.map((src, index) => { const frame = galleryFrames[index % galleryFrames.length]; return <button key={`${src}-${index}`} className={`group relative block aspect-[1.5] w-full p-[6px] ${frame.shape}`} style={{ backgroundColor: frame.colour }} onClick={() => window.open(src, '_blank')} data-testid={`button-gallery-${index + 1}`}><span className={`relative block h-full w-full overflow-hidden bg-white ${frame.shape}`}><img src={src} alt={`School life gallery ${index + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /><span className="absolute inset-0 bg-[#8E140E]/0 transition-colors group-hover:bg-[#8E140E]/20" /></span></button>; })}</div>
+    <div className="reveal relative mx-auto w-full max-w-[210px] overflow-hidden rounded-2xl border-[5px] border-white bg-[#123A5E] shadow-[0_10px_26px_rgba(31,40,56,.2)]"><div className="relative aspect-[9/16] overflow-hidden rounded-xl"><StoryVideo /></div></div>
+    <div className="grid grid-cols-2 gap-x-5 gap-y-6 md:grid-cols-3">{gallery.map((src, index) => { const frame = galleryFrames[index % galleryFrames.length]; return <button key={`${src}-${index}`} className={`group relative block aspect-[1.5] w-full p-[6px] ${frame.shape}`} style={{ backgroundColor: frame.colour }} onClick={() => window.open(src, '_blank')} data-testid={`button-gallery-${index + 1}`}><span className={`relative block h-full w-full overflow-hidden bg-white ${frame.shape}`}><img src={src} alt={`School life gallery ${index + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /><span className="absolute inset-0 bg-[#0F4C5C]/0 transition-colors group-hover:bg-[#0F4C5C]/20" /></span></button>; })}</div>
   </div></div></section>;
 }
 
@@ -368,39 +513,130 @@ function Testimonials() {
     const timer = window.setInterval(() => setActive(current => (current + 1) % testimonials.length), 7000);
     return () => window.clearInterval(timer);
   }, [paused, testimonials.length]);
-  return <section id="blogs" className="py-5 md:py-7"><div className="container-wide"><Heading title="Parent Say" accent="About us" /><div className="relative mx-auto mt-6 max-w-[760px] px-7 text-center sm:px-14" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} aria-roledescription="carousel" aria-live="polite"><Quote className="absolute left-0 top-0 h-7 w-7 text-[#8E140E] sm:h-10 sm:w-10" fill="currentColor" /><Quote className="absolute right-0 top-0 h-7 w-7 rotate-180 text-[#8E140E] sm:h-10 sm:w-10" fill="currentColor" /><div key={active} className="testimonial-fade"><blockquote className="whitespace-pre-line text-[16px] leading-[1.55] text-black" data-testid="text-testimonial">{testimonial.quote}</blockquote><p className="mt-4 text-right text-[18px] font-semibold text-[#8E140E]" data-testid="text-testimonial-name">{testimonial.name}</p></div><div className="absolute -right-2 bottom-4 hidden h-20 w-14 rounded-[50%] bg-gradient-to-br from-[#8E140E] via-white to-[#1F2838] md:block" /></div></div></section>;
+  return <section id="blogs" className="py-5 md:py-7"><div className="container-wide"><Heading title="Parent Say" accent="About us" /><div className="relative mx-auto mt-6 max-w-[760px] px-7 text-center sm:px-14" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} aria-roledescription="carousel" aria-live="polite"><Quote className="absolute left-0 top-0 h-7 w-7 text-[#0F4C5C] sm:h-10 sm:w-10" fill="currentColor" /><Quote className="absolute right-0 top-0 h-7 w-7 rotate-180 text-[#0F4C5C] sm:h-10 sm:w-10" fill="currentColor" /><div key={active} className="testimonial-fade"><blockquote className="whitespace-pre-line text-[16px] leading-[1.55] text-black" data-testid="text-testimonial">{testimonial.quote}</blockquote><p className="mt-4 text-right text-[18px] font-semibold text-[#0F4C5C]" data-testid="text-testimonial-name">{testimonial.name}</p></div><div className="absolute -right-2 bottom-4 hidden h-20 w-14 rounded-[50%] bg-gradient-to-br from-[#0F4C5C] via-white to-[#1F2838] md:block" /></div></div></section>;
 }
 
 function Admissions({ onEnquire }: { onEnquire: () => void }) {
-  return <section id="career" className="py-4 text-center"><button onClick={onEnquire} className="rounded-full border-2 border-[#8E140E] px-10 py-5 text-base font-semibold text-[#8E140E] hover:bg-[#8E140E] hover:text-white" data-testid="button-admissions-enquiry">START YOUR ADMISSION ENQUIRY <ArrowRight className="ml-2 inline" size={20} /></button></section>;
+  return <section id="career" className="py-4 text-center"><button onClick={onEnquire} className="rounded-full border-2 border-[#0F4C5C] px-10 py-5 text-base font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white" data-testid="button-admissions-enquiry">START YOUR ADMISSION ENQUIRY <ArrowRight className="ml-2 inline" size={20} /></button></section>;
 }
 
 function Footer({ onEnquire }: { onEnquire: () => void }) {
-  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-5 md:py-7"><div className="grid gap-5 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="text-center"><a href="#top" className="mx-auto flex w-max flex-col items-center gap-2 text-white" data-testid="link-logo-footer"><img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="h-16 w-16 rounded-full border-[3px] border-white object-cover shadow" /><span className="block text-center leading-[1.15]"><b className="block text-[15px] tracking-[.06em]">VIVEKANANDA</b><small className="block text-[11px] tracking-[.18em]">CONCEPT SCHOOL</small><small className="block text-[11px] tracking-[.18em]">PULIVENDLA</small></span></a><small className="mt-2 block text-[11px] tracking-[.13em] text-white">LEARN • GROW • SHINE</small><p className="mx-auto mt-3 max-w-[260px] text-center text-[13px] leading-[1.4]">Vivekananda Concept School, Pulivendla, under the guidance of a dedicated team of educators.</p></div></div><div><h3 className="text-[15px] font-semibold">Helpful Links</h3><div className="mt-3 grid gap-1.5 text-[14px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="text-[15px] font-semibold">Address</h3><a href="tel:+918500045678" className="mt-3 flex items-center gap-2 text-[14px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href="https://www.google.com/maps/search/?api=1&query=3-4-55%2C+Guntha+Bazar+Rd%2C+near+Raja+Reddy+Hospital%2C+Pulivendla%2C+516390" target="_blank" rel="noreferrer" className="mt-2.5 flex gap-2 text-[14px] leading-[1.4] hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> 3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-2.5 flex items-center gap-2 text-[14px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-2.5 flex items-center gap-2 text-[14px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-4 rounded border border-white px-3 py-1.5 text-[12px] font-semibold hover:bg-white hover:text-[#8E140E]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-5 border-t border-white/30 pt-3 text-[12px]">© 2026 Vivekananda Concept School · Mandatory Disclosure</div></div></footer>;
+  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-5 md:py-7"><div className="grid gap-5 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="text-center"><a href="#top" className="mx-auto flex w-max flex-col items-center gap-2 text-white" data-testid="link-logo-footer"><img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="h-20 w-20 rounded-full border-[3px] border-white object-cover shadow" /><span className="block text-center leading-[1.15]"><b className="block text-[15px] tracking-[.06em]">VIVEKANANDA</b><small className="block text-[11px] tracking-[.18em]">CONCEPT SCHOOL</small><small className="block text-[11px] tracking-[.18em]">PULIVENDLA</small></span></a><small className="mt-2 block text-[11px] tracking-[.13em] text-white">LEARN • GROW • SHINE</small><p className="mx-auto mt-3 max-w-[260px] text-center text-[13px] leading-[1.4]">Vivekananda Concept School, Pulivendla, under the guidance of a dedicated team of educators.</p></div></div><div><h3 className="text-[15px] font-semibold">Helpful Links</h3><div className="mt-3 grid gap-1.5 text-[14px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="text-[15px] font-semibold">Address</h3><a href="tel:+918500045678" className="mt-3 flex items-center gap-2 text-[14px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href="https://www.google.com/maps/search/?api=1&query=3-4-55%2C+Guntha+Bazar+Rd%2C+near+Raja+Reddy+Hospital%2C+Pulivendla%2C+516390" target="_blank" rel="noreferrer" className="mt-2.5 flex gap-2 text-[14px] leading-[1.4] hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> 3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-2.5 flex items-center gap-2 text-[14px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-2.5 flex items-center gap-2 text-[14px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-4 rounded border border-white px-3 py-1.5 text-[12px] font-semibold hover:bg-white hover:text-[#0F4C5C]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-5 border-t border-white/30 pt-3 text-[12px]">© 2026 Vivekananda Concept School · Mandatory Disclosure</div></div></footer>;
+}
+
+/* The dotted corner marks on the brand panel are decoration only, so they are drawn with a repeating
+   gradient rather than four more image requests. */
+function DotGrid({ className }: { className: string }) {
+  return <span aria-hidden className={`pointer-events-none absolute ${className}`} style={{ backgroundImage: 'radial-gradient(#B7C4D4 1.5px, transparent 1.6px)', backgroundSize: '8px 8px' }} />;
+}
+
+const enquiryInputClass = 'w-full rounded-lg border border-[#DCE3EC] bg-white py-2 pl-10 pr-3 text-[13.5px] text-[#1F2838] outline-none transition placeholder:text-[#96A3B4] focus:border-[#123A5E] focus:ring-2 focus:ring-[#123A5E]/15';
+
+function EnquiryField({ label, icon, error, children }: { label: string; icon: ReactNode; error?: string; children: ReactNode }) {
+  return <label className="block">
+    <span className="text-[12px] font-semibold text-[#123A5E]">{label}</span>
+    <span className="relative mt-1 block">
+      <span className="pointer-events-none absolute left-3 top-[10px] text-[#123A5E]/70">{icon}</span>
+      {children}
+    </span>
+    {error && <span className="mt-1 block text-[12px] font-medium text-[#C0392B]">{error}</span>}
+  </label>;
 }
 
 function EnquiryModal({ onClose }: { onClose: () => void }) {
   const [sent, setSent] = useState(false); const [errors, setErrors] = useState<Record<string, string>>({});
-  const submit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const data = new FormData(event.currentTarget); const next: Record<string, string> = {}; if (!String(data.get('parentName')).trim()) next.parentName = 'Please tell us your name'; if (!String(data.get('email')).match(/^[^@]+@[^@]+\.[^@]+$/)) next.email = 'Enter a valid email address'; /* Spaces, dashes and a +91 are all normal ways to write a number down, so they are stripped before checking rather than rejected. What is left has to be a ten-digit Indian mobile — the admissions team calls back on this, so a landline or a short number is worth catching here. */ const phone = String(data.get('phone') ?? '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, ''); if (!/^[6-9]\d{9}$/.test(phone)) next.phone = 'Enter a 10-digit mobile number'; if (!String(data.get('childGrade'))) next.childGrade = 'Choose a grade'; if (Object.keys(next).length) { setErrors(next); return; } setErrors({}); setSent(true); };
-  return <div className="fixed inset-0 z-50 grid place-items-center bg-[#1F2838]/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true"><div className="relative max-h-[95dvh] w-full max-w-[490px] overflow-auto rounded bg-white p-5 text-black sm:p-7 shadow-2xl"><button onClick={onClose} className="absolute right-4 top-4 rounded p-1 text-[#8E140E]" aria-label="Close enquiry" data-testid="button-close-enquiry"><X size={19} /></button>{sent ? <div className="py-12 text-center"><Check className="mx-auto rounded-full bg-[#8E140E] p-3 text-white" size={58} /><h2 className="mt-6 font-display text-4xl">Thank you.</h2><p className="mt-3 text-sm text-black">Our admissions team will call you within one school day.</p><button onClick={onClose} className="mt-7 rounded-full bg-[#8E140E] px-6 py-3 text-xs font-bold text-white" data-testid="button-success-close">BACK TO SCHOOL</button></div> : <><p className="text-[14px] font-bold tracking-[.18em] text-[#8E140E]">ADMISSION ENQUIRY</p><h2 className="mt-3 font-display text-4xl leading-none">Please enter <i className="text-[#8E140E]">child’s details.</i></h2><p className="mt-3 text-sm text-black">Share a few details and we will arrange a personal campus visit.</p><form onSubmit={submit} className="mt-6 space-y-4" noValidate><label className="block text-xs font-semibold">Parent / guardian name<input name="parentName" className="mt-1.5 w-full rounded border border-[#1F2838] px-3 py-2.5 text-sm outline-none focus:border-[#8E140E]" data-testid="input-parent-name" />{errors.parentName && <span className="text-xs text-red-600">{errors.parentName}</span>}</label><label className="block text-xs font-semibold">Email address<input name="email" type="email" className="mt-1.5 w-full rounded border border-[#1F2838] px-3 py-2.5 text-sm outline-none focus:border-[#8E140E]" data-testid="input-email" />{errors.email && <span className="text-xs text-red-600">{errors.email}</span>}</label><label className="block text-xs font-semibold">Phone number<input name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="10-digit mobile number" className="mt-1.5 w-full rounded border border-[#1F2838] px-3 py-2.5 text-sm outline-none focus:border-[#8E140E]" data-testid="input-phone" />{errors.phone && <span className="text-xs text-red-600">{errors.phone}</span>}</label><label className="block text-xs font-semibold">Child’s grade<select name="childGrade" defaultValue="" className="mt-1.5 w-full rounded border border-[#1F2838] bg-white px-3 py-2.5 text-sm outline-none" data-testid="select-child-grade"><option value="" disabled>Select a grade</option>{programmes.map((item) => <option key={item.name}>{item.name}</option>)}</select>{errors.childGrade && <span className="text-xs text-red-600">{errors.childGrade}</span>}</label><label className="block text-xs font-semibold">A note for our team<textarea name="note" rows={3} className="mt-1.5 w-full resize-none rounded border border-[#1F2838] px-3 py-2.5 text-sm outline-none" data-testid="textarea-note" /></label><button type="submit" className="flex w-full items-center justify-center gap-2 rounded-full bg-[#8E140E] py-3.5 text-xs font-bold text-white" data-testid="button-submit-enquiry">SEND ENQUIRY <Send size={14} /></button></form></>}</div></div>;
+  const submit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const data = new FormData(event.currentTarget); const next: Record<string, string> = {}; if (!String(data.get('parentName')).trim()) next.parentName = 'Please tell us your name'; if (!String(data.get('studentName')).trim()) next.studentName = 'Please tell us the student’s name'; /* Spaces, dashes and a +91 are all normal ways to write a number down, so they are stripped before checking rather than rejected. What is left has to be a ten-digit Indian mobile — the admissions team calls back on this, so a landline or a short number is worth catching here. */ const phone = String(data.get('phone') ?? '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, ''); if (!/^[6-9]\d{9}$/.test(phone)) next.phone = 'Enter a 10-digit mobile number'; if (!String(data.get('childGrade'))) next.childGrade = 'Choose a grade'; if (Object.keys(next).length) { setErrors(next); return; } setErrors({}); setSent(true); };
+
+  return <div className="fixed inset-0 z-50 grid place-items-center bg-[#101A2B]/70 p-3 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div className="relative flex max-h-[94dvh] w-full max-w-[880px] overflow-hidden rounded-[20px] bg-white text-[#123A5E] shadow-[0_30px_80px_-24px_rgba(11,26,48,.65)]">
+
+      <aside className="relative hidden w-1/2 shrink-0 flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#F7FAFD] via-[#F2F7FC] to-[#EAF1F9] p-8 md:flex">
+        <svg viewBox="0 0 400 260" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] w-full" aria-hidden>
+          <path d="M0 118c78-46 150 22 226 4s118-62 174-38v176H0z" fill="#DDE8F5" opacity=".75" />
+          <path d="M0 176c86-38 148 24 224 10s122-46 176-24v98H0z" fill="#F3DDE4" opacity=".7" />
+          <path d="M0 214c92-30 150 18 226 6s116-32 174-14v54H0z" fill="#E3ECF7" opacity=".85" />
+        </svg>
+        <DotGrid className="left-7 top-7 h-[34px] w-[46px]" />
+        <DotGrid className="bottom-9 right-8 h-[34px] w-[46px]" />
+        <div className="relative z-10 flex w-full flex-col items-center text-center">
+          <img src="/logo.jpeg" alt="Vivekananda Concept School logo" className="mb-5 h-[94px] w-[94px] rounded-full object-cover shadow-[0_10px_24px_-12px_rgba(18,58,94,.6)]" />
+          <b className="font-round text-[clamp(1.6rem,3.4vw,2.5rem)] font-extrabold leading-none tracking-[.045em] text-[#123A5E]">VIVEKANANDA</b>
+          <small className="mt-2.5 block text-[clamp(.7rem,1.4vw,1rem)] font-semibold leading-none tracking-[.26em] text-[#7C8B99]">CONCEPT SCHOOL</small>
+          <span className="mt-4 flex items-center gap-2">
+            <span className="h-[2px] w-[62px] rounded-full bg-[#123A5E]" /><span className="h-[5px] w-[5px] rounded-full bg-[#123A5E]" /><span className="h-[2px] w-[62px] rounded-full bg-[#123A5E]" />
+          </span>
+          <blockquote className="mt-7 flex w-full max-w-[300px] flex-col items-center">
+            <span className="flex w-full items-center gap-3">
+              <span className="h-px flex-1 bg-[#123A5E]/40" /><Quote size={22} className="shrink-0 rotate-180 text-[#123A5E]" fill="currentColor" strokeWidth={0} /><span className="h-px flex-1 bg-[#123A5E]/40" />
+            </span>
+            <p className="mt-4 text-[13.5px] leading-[1.62] text-[#3F5771]">Knowledge can only be obtained in one way, the way of experience; there is no other way to know.</p>
+            <Quote size={22} className="mt-4 text-[#123A5E]" fill="currentColor" strokeWidth={0} />
+          </blockquote>
+        </div>
+      </aside>
+
+      <div className="relative flex min-w-0 flex-1 flex-col overflow-y-auto p-5 sm:p-6">
+        <DotGrid className="bottom-6 right-6 h-[26px] w-[38px]" />
+        <button onClick={onClose} className="absolute right-5 top-5 z-10 rounded p-1 text-[#123A5E] transition hover:text-[#C0392B]" aria-label="Close enquiry" data-testid="button-close-enquiry"><X size={22} /></button>
+        {sent ? <div className="grid flex-1 place-content-center py-10 text-center">
+          <Check className="mx-auto rounded-full bg-[#123A5E] p-3 text-white" size={58} />
+          <h2 className="mt-6 font-display text-4xl text-[#123A5E]">Thank you.</h2>
+          <p className="mt-3 text-sm text-[#3F5771]">Our admissions team will call you within one school day.</p>
+          <button onClick={onClose} className="mx-auto mt-6 rounded-lg bg-[#123A5E] px-6 py-3 text-xs font-bold tracking-[.12em] text-white transition hover:bg-[#0D2B46]" data-testid="button-success-close">BACK TO SCHOOL</button>
+        </div> : <>
+          <h2 className="pr-9 text-[21px] font-bold tracking-[.14em] text-[#123A5E]">ADMISSION ENQUIRY</h2>
+          <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
+            <EnquiryField label="Parent / guardian name" icon={<User size={17} />} error={errors.parentName}>
+              <input name="parentName" placeholder="Enter full name" className={enquiryInputClass} data-testid="input-parent-name" />
+            </EnquiryField>
+            <EnquiryField label="Student name" icon={<UserRound size={17} />} error={errors.studentName}>
+              <input name="studentName" placeholder="Enter student name" className={enquiryInputClass} data-testid="input-student-name" />
+            </EnquiryField>
+            <EnquiryField label="Phone number" icon={<Phone size={17} />} error={errors.phone}>
+              <input name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="10-digit mobile number" className={enquiryInputClass} data-testid="input-phone" />
+            </EnquiryField>
+            <EnquiryField label="Child’s grade" icon={<GraduationCap size={17} />} error={errors.childGrade}>
+              <select name="childGrade" defaultValue="" className={`${enquiryInputClass} appearance-none pr-10`} data-testid="select-child-grade">
+                <option value="" disabled>Select a grade</option>
+                {programmes.map((item) => <option key={item.name}>{item.name}</option>)}
+              </select>
+              <ChevronDown size={17} className="pointer-events-none absolute right-3 top-[10px] text-[#123A5E]" />
+            </EnquiryField>
+            <button type="submit" className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-[#123A5E] py-3.5 text-[12.5px] font-bold tracking-[.14em] text-white shadow-[0_12px_22px_-12px_rgba(18,58,94,.9)] transition hover:bg-[#0D2B46]" data-testid="button-submit-enquiry">SEND ENQUIRY <Send size={15} /></button>
+          </form>
+        </>}
+      </div>
+    </div>
+  </div>;
 }
 
 function AdmissionsPopup({ onClose, onEnquire }: { onClose: () => void; onEnquire: () => void }) {
   return <div className="fixed inset-0 z-[60] grid place-items-center bg-[#1F2838]/70 p-4" role="dialog" aria-modal="true" onClick={onClose}>
-    <div className="relative w-full max-w-[500px]" onClick={(event) => event.stopPropagation()}>
-      <button onClick={onClose} className="absolute -right-2 -top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-white text-[#8E140E] shadow-lg" aria-label="Close admissions popup" data-testid="button-close-admissions-popup"><X size={18} /></button>
-      <img src="/admissions.png" alt="Admissions open at Vivekananda Concept School" className="w-full rounded-lg border-4 border-white shadow-2xl" data-testid="img-admissions-popup" />
-      <button onClick={() => { onClose(); onEnquire(); }} className="mt-3 w-full rounded-full bg-[#8E140E] py-3 text-xs font-bold text-white" data-testid="button-admissions-popup-enquiry">START YOUR ADMISSION ENQUIRY</button>
+    <div className="relative w-full max-w-[620px]" onClick={(event) => event.stopPropagation()}>
+      <button onClick={onClose} className="absolute -right-2 -top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-white text-[#0F4C5C] shadow-lg" aria-label="Close admissions popup" data-testid="button-close-admissions-popup"><X size={18} /></button>
+      <img src="/admissions-popup.jpeg" alt="Admissions open at Vivekananda Concept School" className="w-full rounded-lg border-4 border-white shadow-2xl" data-testid="img-admissions-popup" />
+      <button onClick={() => { onClose(); onEnquire(); }} className="mt-3 w-full rounded-full bg-[#0F4C5C] py-3 text-xs font-bold text-white" data-testid="button-admissions-popup-enquiry">START YOUR ADMISSION ENQUIRY</button>
     </div>
   </div>;
 }
 
 function CallFab({ onEnquire }: { onEnquire: () => void }) {
+  /* The widget waits until the header has scrolled out of view. While the
+     header is on screen its own enquiry button is right there, so the floating
+     one is just another thing sitting over the hero. */
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const header = document.querySelector('header');
+    if (!header) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting));
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
   /* Scaled back below sm. At the full size this stack is 170px wide and about
      155px tall — on a 360px handset that is half the width of the screen
      parked over the content, and it sat on top of the footer links. The inset
      also clears the iOS home indicator via the safe-area inset. */
-  return <div className="fixed bottom-3 right-3 z-40 flex flex-col items-center gap-1 sm:bottom-7 sm:right-7" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+  return <div className={`fixed bottom-3 right-3 z-40 flex flex-col items-center gap-1 transition-all duration-300 sm:bottom-7 sm:right-7 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-5 opacity-0'}`} style={{ paddingBottom: 'env(safe-area-inset-bottom)' }} aria-hidden={!visible}>
     <button onClick={onEnquire} className="call-cloud relative block h-[56px] w-[124px] sm:h-[76px] sm:w-[170px]" aria-label="Start your admission enquiry" data-testid="button-call-cloud">
       <svg viewBox="0 0 200 96" preserveAspectRatio="none" className="absolute inset-0 h-full w-full drop-shadow-[0_4px_10px_rgba(31,40,56,.25)]" aria-hidden="true">
         <path d="M24 72 A20 20 0 0 1 30 33 A26 26 0 0 1 78 20 A24 24 0 0 1 124 24 A24 24 0 0 1 168 36 A19 19 0 0 1 176 72 L118 72 L106 93 L96 72 Z" fill="#FFFFFF" stroke="#1C2A37" strokeWidth="3" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
