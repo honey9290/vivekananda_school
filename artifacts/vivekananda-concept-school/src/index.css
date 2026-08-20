@@ -90,20 +90,20 @@
 }
 @keyframes wallpaper-icon-float-a {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(38px, -55px) rotate(8deg); }
-  50% { transform: translate(-20px, -90px) rotate(-4deg); }
-  75% { transform: translate(-55px, -30px) rotate(6deg); }
+  25% { transform: translate(10px, -20px) rotate(8deg); }
+  50% { transform: translate(-6px, -32px) rotate(-4deg); }
+  75% { transform: translate(-12px, -12px) rotate(6deg); }
 }
 @keyframes wallpaper-icon-float-b {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  30% { transform: translate(-50px, 40px) rotate(-9deg); }
-  60% { transform: translate(35px, 70px) rotate(5deg); }
-  85% { transform: translate(60px, 10px) rotate(-3deg); }
+  30% { transform: translate(-12px, 14px) rotate(-9deg); }
+  60% { transform: translate(9px, 26px) rotate(5deg); }
+  85% { transform: translate(14px, 6px) rotate(-3deg); }
 }
 @keyframes wallpaper-icon-float-c {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  33% { transform: translate(45px, 35px) rotate(6deg); }
-  66% { transform: translate(-45px, -20px) rotate(-7deg); }
+  33% { transform: translate(11px, 13px) rotate(6deg); }
+  66% { transform: translate(-11px, -8px) rotate(-7deg); }
 }
 .section-heading { font-family: var(--app-font-serif); font-style: italic; font-weight: 700; color: #000; }
 .section-heading em { color: #0F4C5C; font-style: normal; }
@@ -112,6 +112,11 @@
 .ornament-mark { font-size: 18px; line-height: 1; transform: rotate(180deg); }
 .hero-pattern { background-color: #1F2838; background-image: linear-gradient(135deg, transparent 0 46%, rgba(15,76,92,.35) 46% 47%, transparent 47% 100%), repeating-linear-gradient(35deg, transparent 0 40px, rgba(255,255,255,.035) 40px 42px); }
 .footer-texture { background-color: #1F2838; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 6px 6px; }
+.orb-ring-spin { animation: orb-ring-spin 14s linear infinite; transform-origin: 50% 50%; }
+.orb-ring-spin-reverse { animation-direction: reverse; }
+@keyframes orb-ring-spin { to { transform: rotate(1turn); } }
+@media (prefers-reduced-motion: reduce) { .orb-ring-spin { animation: none; } }
+
 .gallery-blob { clip-path: polygon(18% 5%, 55% 0, 82% 13%, 100% 45%, 89% 78%, 57% 100%, 19% 93%, 0 61%, 4% 27%); }
 .g-shape-blob { border-radius: 58% 42% 47% 53% / 54% 46% 54% 46%; }
 .g-shape-oval { border-radius: 50%; }
@@ -120,6 +125,30 @@
 .g-shape-octagon { clip-path: polygon(0% 24%, 16% 0%, 84% 0%, 100% 24%, 100% 76%, 84% 100%, 16% 100%, 0% 76%); }
 .g-shape-star { clip-path: polygon(50% 0%, 62% 32%, 98% 34%, 70% 56%, 79% 91%, 50% 71%, 21% 91%, 30% 56%, 2% 34%, 38% 32%); }
 .facility-circle { border: 2px dashed #1F2838; }
+/* A band of white light crosses the crest each time a header link is taken —
+   the acknowledgement that something is loading, kept to the logo alone. The
+   band is wider than the circle and starts fully clear of it, so it enters
+   and leaves rather than appearing on top of it. */
+.logo-shimmer {
+  position: absolute; inset: 0; pointer-events: none; border-radius: 9999px;
+  background: linear-gradient(105deg, transparent 34%, rgba(255,255,255,.15) 42%, rgba(255,255,255,.92) 50%, rgba(255,255,255,.15) 58%, transparent 66%);
+  animation: logo-shimmer .85s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes logo-shimmer { from { transform: translateX(-135%); } to { transform: translateX(135%); } }
+/* The splash runs the same light on a loop for its one second, and holds the
+   white full-strength until the last fifth so the fade lands as the element
+   is removed rather than after it. */
+.logo-shimmer-loop { animation: logo-shimmer 1s cubic-bezier(.4,0,.2,1) infinite; }
+.loading-splash { animation: loading-splash-out 1s ease forwards; }
+@keyframes loading-splash-out { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+/* The page comes up as the splash goes down. `both` holds it at the opening
+   frame through the delay, so it waits out the crest rather than sitting
+   there behind it, and the delay is set to the moment the splash begins to
+   fade so the two cross instead of queueing. */
+.page-reveal { animation: page-reveal 1.1s cubic-bezier(.22,.61,.36,1) .8s both; }
+@keyframes page-reveal { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .logo-shimmer { animation: none; opacity: 0; } .page-reveal { animation: none; } }
+
 .call-fab-icon { animation: call-fab-ring 2.2s ease-in-out infinite; transform-origin: 50% 10%; }
 @keyframes call-fab-ring { 0%, 62%, 100% { transform: rotate(0deg); } 4%, 12%, 20%, 28% { transform: rotate(-17deg); } 8%, 16%, 24% { transform: rotate(17deg); } }
 .call-fab-ripple { position: absolute; inset: 0; border-radius: 9999px; border: 2px solid #1C2A37; animation: call-fab-ripple 2.2s ease-out infinite; }
@@ -141,5 +170,16 @@
 @keyframes doodle-drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(16px, -10px); } }
 @keyframes doodle-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .doodle-float, .doodle-drift, .doodle-spin { animation: none; } }
+
+/* ---------------------------------------------------- scrolling hero band */
+/* The band is `--slide-count` slides wide showing `--per-view` of them, so a
+   slide is always one clean column of the section however many are in the
+   run. It slides right by half its width — one full run — which lands the
+   duplicate exactly where the original was, and the loop closes invisibly.
+   Linear, and slow: easing would give the circle a visible heartbeat. */
+.hero-track { --per-view: 1; width: calc(var(--slide-count) / var(--per-view) * 100%); animation: hero-track 48s linear infinite; }
+.hero-slide { width: calc(100% / var(--slide-count)); }
+@keyframes hero-track { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) { .hero-track { animation: none; transform: translateX(-50%); } }
 
 @media (max-width: 640px) { .container-wide { width: min(100% - 28px, 1180px); } .container-hero { width: min(100% - 28px, 1400px); } .ornament { width: 180px; } }

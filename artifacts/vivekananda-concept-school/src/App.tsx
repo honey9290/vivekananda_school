@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, BookMarked, BookOpen, BookText, Bus, Calculator, Check, ChevronDown, ChevronRight, ExternalLink, FlaskConical, Globe2, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, School, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, BookMarked, BookOpen, BookText, Bus, Calculator, Check, ChevronDown, ChevronRight, FlaskConical, Globe2, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -8,44 +8,40 @@ import NotFound from '@/pages/not-found';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 const WALLPAPER_TILE = { width: 897, height: 1753 };
 const WALLPAPER_ICONS = [
-  { file: 'apple-svgrepo-com.svg', leftPct: 8, topPct: 4, widthPct: 6 },
-  { file: 'books-svgrepo-com.svg', leftPct: 88, topPct: 9, widthPct: 6 },
-  { file: 'cricket-svgrepo-com.svg', leftPct: 5, topPct: 14, widthPct: 6 },
-  { file: 'cup-svgrepo-com.svg', leftPct: 92, topPct: 19, widthPct: 6 },
-  { file: 'educate-svgrepo-com.svg', leftPct: 12, topPct: 24, widthPct: 5 },
-  { file: 'earth-svgrepo-com.svg', leftPct: 85, topPct: 29, widthPct: 6 },
-  { file: 'giraffe-svgrepo-com.svg', leftPct: 10, topPct: 34, widthPct: 7 },
-  { file: 'laptop-svgrepo-com.svg', leftPct: 90, topPct: 39, widthPct: 6 },
-  { file: 'lion-svgrepo-com.svg', leftPct: 7, topPct: 44, widthPct: 6 },
-  { file: 'paint-palette-palette-svgrepo-com.svg', leftPct: 14, topPct: 49, widthPct: 6 },
-  { file: 'physical-education-svgrepo-com.svg', leftPct: 88, topPct: 54, widthPct: 5 },
-  { file: 'rainbow-svgrepo-com.svg', leftPct: 94, topPct: 59, widthPct: 7 },
-  { file: 'rocket-svgrepo-com.svg', leftPct: 6, topPct: 64, widthPct: 6 },
-  { file: 'sleeping-svgrepo-com.svg', leftPct: 89, topPct: 69, widthPct: 5 },
-  { file: 'star-svgrepo-com.svg', leftPct: 9, topPct: 74, widthPct: 5 },
-  { file: 'sun-svgrepo-com.svg', leftPct: 91, topPct: 79, widthPct: 6 },
-  { file: 'apple-svgrepo-com.svg', leftPct: 11, topPct: 84, widthPct: 6 },
-  { file: 'books-svgrepo-com.svg', leftPct: 87, topPct: 89, widthPct: 6 },
-  { file: 'cricket-svgrepo-com.svg', leftPct: 5, topPct: 94, widthPct: 6 },
-  { file: 'cup-svgrepo-com.svg', leftPct: 93, topPct: 97, widthPct: 6 },
-  { file: 'educate-svgrepo-com.svg', leftPct: 14, topPct: 99, widthPct: 5 },
+  { file: 'apple-svgrepo-com.svg', leftPct: 1.2, topPct: 3, widthPct: 6 },
+  { file: 'books-svgrepo-com.svg', leftPct: 92.6, topPct: 7, widthPct: 6 },
+  { file: 'cricket-svgrepo-com.svg', leftPct: 2.2, topPct: 12, widthPct: 6.4 },
+  { file: 'cup-svgrepo-com.svg', leftPct: 93.4, topPct: 17, widthPct: 5.6 },
+  { file: 'educate-svgrepo-com.svg', leftPct: 1, topPct: 22, widthPct: 5.6 },
+  { file: 'earth-svgrepo-com.svg', leftPct: 92.8, topPct: 27, widthPct: 6 },
+  { file: 'giraffe-svgrepo-com.svg', leftPct: 2.4, topPct: 32, widthPct: 6.8 },
+  { file: 'laptop-svgrepo-com.svg', leftPct: 93, topPct: 37, widthPct: 6 },
+  { file: 'lion-svgrepo-com.svg', leftPct: 1.1, topPct: 42, widthPct: 6 },
+  { file: 'paint-palette-palette-svgrepo-com.svg', leftPct: 92.7, topPct: 47, widthPct: 6 },
+  { file: 'physical-education-svgrepo-com.svg', leftPct: 2, topPct: 52, widthPct: 5.6 },
+  { file: 'rainbow-svgrepo-com.svg', leftPct: 92.4, topPct: 57, widthPct: 6.8 },
+  { file: 'rocket-svgrepo-com.svg', leftPct: 1.3, topPct: 62, widthPct: 6 },
+  { file: 'sleeping-svgrepo-com.svg', leftPct: 93.2, topPct: 67, widthPct: 5.6 },
+  { file: 'star-svgrepo-com.svg', leftPct: 1.9, topPct: 72, widthPct: 5.6 },
+  { file: 'sun-svgrepo-com.svg', leftPct: 92.9, topPct: 77, widthPct: 6 },
+  { file: 'elephant-svgrepo-com.svg', leftPct: 1, topPct: 82, widthPct: 6.8 },
+  { file: 'carrot-svgrepo-com.svg', leftPct: 93.3, topPct: 86, widthPct: 5.6 },
+  { file: 'pineapple-svgrepo-com.svg', leftPct: 2.1, topPct: 90, widthPct: 5.6 },
+  { file: 'bulb-svgrepo-com.svg', leftPct: 92.8, topPct: 94, widthPct: 6 },
+  { file: 'apple-svgrepo-com.svg', leftPct: 1.5, topPct: 97, widthPct: 5.6 },
+  { file: 'books-svgrepo-com.svg', leftPct: 92.5, topPct: 99, widthPct: 6 },
 ] as const;
 
-const CENTER_ICONS = [
-  { file: 'elephant-svgrepo-com.svg', leftPct: 38, topPct: 18, widthPct: 7 },
-  { file: 'carrot-svgrepo-com.svg', leftPct: 70, topPct: 42, widthPct: 5 },
-  { file: 'pineapple-svgrepo-com.svg', leftPct: 35, topPct: 67, widthPct: 5 },
-  { file: 'bulb-svgrepo-com.svg', leftPct: 68, topPct: 82, widthPct: 6 },
-] as const;
-
-const ALL_TILE_ICONS = [...WALLPAPER_ICONS, ...CENTER_ICONS];
+/* The wallpaper is margin decoration: every icon sits in one of the two
+   narrow gutters so nothing ever drifts across the column of reading. */
+const ALL_TILE_ICONS = WALLPAPER_ICONS;
 
 const FLOAT_VARIANTS = ['wallpaper-icon-float-a', 'wallpaper-icon-float-b', 'wallpaper-icon-float-c'];
 
 function WallpaperTile() {
-  return <div className="relative mx-auto w-[90%]" style={{ aspectRatio: `${WALLPAPER_TILE.width} / ${WALLPAPER_TILE.height}` }}>
+  return <div className="relative mx-auto w-full" style={{ aspectRatio: `${WALLPAPER_TILE.width} / ${WALLPAPER_TILE.height}` }}>
     {ALL_TILE_ICONS.map((icon, index) => <div key={`${icon.file}-${icon.leftPct}-${icon.topPct}`} className="wallpaper-icon-depth absolute" style={{ left: `${icon.leftPct}%`, top: `${icon.topPct}%`, width: `${icon.widthPct}%` }}>
-      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full opacity-50 ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
+      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full opacity-40 ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
     </div>)}
   </div>;
 }
@@ -107,43 +103,69 @@ const queryClient = new QueryClient();
 /* `#…` scrolls to a section on the home page; `/…` is a route of its own. The
    nav treats the two differently, so they can sit in one list. */
 const navItems = [
-  ['Home', '#top'], ['About Us', '#about'], ['Faculty', '/faculty'], ['Results', '#results'], ['Facilities', '#media'],
-  ['Gallery', '#gallery'], ['Blogs', '#blogs'], ['Contact Us', '#contact'],
+  ['Home', '/'], ['About Us', '#about'], ['Results', '#results'], ['Facilities', '#media'],
+  ['Gallery', '/gallery'], ['Blogs', '#blogs'], ['Contact Us', '#contact'],
 ] as const;
 /* The header carries the six-item nav from the design; `navItems` above stays
    the fuller list the footer prints. */
+/* `Home` is a route rather than `#top`: from a branch page the anchor would
+   only scroll that branch's own hero into view, where what is wanted is the
+   way back to the group. Faculty is gone from here — it belongs to a branch
+   now — and Gallery has a page of its own. */
 const headerNavItems = [
-  ['Home', '#top'], ['About Us', '#about'], ['Academics', '#results'], ['Faculty', '/faculty'],
-  ['Facilities', '#media'], ['Gallery', '#gallery'],
+  ['Home', '/'], ['About Us', '#about'], ['Results', '#results'],
+  ['Facilities', '#media'], ['Gallery', '/gallery'],
 ] as const;
 
-function useReveals() {
+function useReveals(key?: string) {
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add('is-visible')), { threshold: .12 });
     document.querySelectorAll('.reveal').forEach((node) => observer.observe(node));
     return () => observer.disconnect();
-  }, []);
+  }, [key]);
 }
 
-function Logo({ footer = false }: { footer?: boolean }) {
+/* `branchName` prints under the wordmark on a branch route, and `hideGroup`
+   drops the GROUP OF SCHOOLS line there — that line belongs to the group's
+   own pages, not to one school inside it. */
+function Logo({ footer = false, branchName, shimmer = 0 }: { footer?: boolean; branchName?: string; shimmer?: number }) {
   return <a href="#top" className="flex shrink-0 items-center gap-3.5" data-testid="link-logo">
-    <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-[64px] w-[64px] shrink-0 rounded-full object-cover sm:h-[82px] sm:w-[82px]" />
+    <span className="relative block h-[64px] w-[64px] shrink-0 overflow-hidden rounded-full sm:h-[82px] sm:w-[82px]">
+      <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-full w-full object-cover" />
+      {/* Keyed on the click count: a fresh element each click is what restarts
+          the animation, since re-rendering the same node would not. */}
+      {shimmer > 0 && <span key={shimmer} className="logo-shimmer" aria-hidden="true" />}
+    </span>
     <span className="leading-none">
       <b className={`block font-round text-[clamp(.9rem,1.5vw,1.35rem)] font-extrabold tracking-[.045em] ${footer ? 'text-white' : 'text-[#123A5E]'}`}>SREE VIVEKANANDA</b>
       <small className={`mt-[6px] block text-[clamp(.55rem,.75vw,.75rem)] font-semibold tracking-[.15em] sm:tracking-[.2em] ${footer ? 'text-white/70' : 'text-[#7C8B99]'}`}>EDUCATIONAL SOCIETY</small>
+      {branchName && <small className={`mt-[6px] block text-[clamp(.62rem,.9vw,.82rem)] font-semibold tracking-[.06em] ${footer ? 'text-white' : 'text-[#2E6A9E]'}`} data-testid="text-header-branch">{branchName}</small>}
     </span>
   </a>;
 }
 
 function Header({ onEnquire }: { onEnquire: () => void }) {
   const [open, setOpen] = useState(false);
+  const [branchesOpen, setBranchesOpen] = useState(false);
+  /* Bumped on every nav click; the crest reads it as the cue to flash. */
+  const [shimmer, setShimmer] = useState(0);
   const [location, navigate] = useLocation();
   /* A route of its own owns the highlight outright; on the home page the
      highlight follows whichever section link was last taken. */
-  const [active, setActive] = useState(() => location === '/' ? '#top' : location);
-  useEffect(() => { setActive(location === '/' ? '#top' : location); }, [location]);
+  const [active, setActive] = useState(() => location);
+  useEffect(() => { setActive(location); }, [location]);
+  /* Read while rendering rather than at module load: `BRANCHES` is declared
+     further down the file, so a top-level derivation would run too early. */
+  const branchLinks = Object.entries(BRANCHES);
+  const onBranch = location.startsWith('/branch/');
+  /* Those two are home-page sections; from a branch the links would only
+     bounce you back to the group site, so they are not offered there. */
+  const items = onBranch ? headerNavItems.filter(([, href]) => href !== '#results' && href !== '#media') : headerNavItems;
+  const currentBranch = onBranch ? BRANCHES[location.slice('/branch/'.length)] : undefined;
   const go = (href: string) => {
     setOpen(false);
+    setBranchesOpen(false);
+    setShimmer((count) => count + 1);
     setActive(href);
     if (!href.startsWith('#')) { navigate(href); window.scrollTo({ top: 0 }); return; }
     const target = document.querySelector(href);
@@ -156,22 +178,47 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
   };
   return <header className="relative z-30 border-b border-[#EFE7D7] bg-white">
     <div className="container-hero flex min-h-[80px] items-center justify-between gap-4 sm:min-h-[104px] sm:gap-6">
-      <Logo />
-      <nav className="hidden items-center gap-[clamp(1.1rem,2.6vw,2.6rem)] lg:flex" aria-label="Primary navigation">
-        {headerNavItems.map(([label, href]) => {
+      <Logo branchName={currentBranch?.streetName} shimmer={shimmer} />
+      <nav className="hidden items-center gap-[clamp(.9rem,2.1vw,2.1rem)] lg:flex" aria-label="Primary navigation">
+        {items.map(([label, href]) => {
           const on = active === href;
           return <a key={href} href={href} onClick={(e) => { e.preventDefault(); go(href); }} aria-current={on ? 'page' : undefined} className={`relative whitespace-nowrap pb-[6px] text-[clamp(.9rem,1.05vw,1.06rem)] font-semibold transition-colors ${on ? 'text-[#1B7A3E]' : 'text-[#153B5B] hover:text-[#1B7A3E]'}`} data-testid={`link-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>
             {label}
             <span className={`absolute -bottom-[3px] left-0 h-[3px] rounded-full bg-[#1B7A3E] transition-all duration-300 ${on ? 'w-full opacity-100' : 'w-0 opacity-0'}`} />
           </a>;
         })}
+        {/* The three branches are routes, not sections, so they hang off one
+            menu rather than lengthening a nav that is already full. */}
+        <div className="relative" onMouseEnter={() => setBranchesOpen(true)} onMouseLeave={() => setBranchesOpen(false)}>
+          <button type="button" onClick={() => setBranchesOpen(!branchesOpen)} aria-expanded={branchesOpen} aria-haspopup="true" className={`relative flex items-center gap-1 whitespace-nowrap pb-[6px] text-[clamp(.9rem,1.05vw,1.06rem)] font-semibold transition-colors ${onBranch ? 'text-[#1B7A3E]' : 'text-[#153B5B] hover:text-[#1B7A3E]'}`} data-testid="button-nav-branches">
+            Branches
+            <ChevronDown size={14} className={`transition-transform duration-200 ${branchesOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+            <span className={`absolute -bottom-[3px] left-0 h-[3px] rounded-full bg-[#1B7A3E] transition-all duration-300 ${onBranch ? 'w-full opacity-100' : 'w-0 opacity-0'}`} />
+          </button>
+          {branchesOpen && <div className="absolute left-1/2 top-full z-40 w-[268px] -translate-x-1/2 rounded-xl border border-[#EFE7D7] bg-white p-1.5 shadow-[0_12px_28px_rgba(31,40,56,.18)]" role="menu">
+            {branchLinks.map(([slug, info]) => <a key={slug} href={`/branch/${slug}`} onClick={(e) => { e.preventDefault(); go(`/branch/${slug}`); }} role="menuitem" className={`block rounded-lg px-3 py-2.5 text-left text-[14px] font-semibold transition-colors ${location === `/branch/${slug}` ? 'bg-[#EAF1F9] text-[#1B7A3E]' : 'text-[#153B5B] hover:bg-[#F2F7FC] hover:text-[#1B7A3E]'}`} data-testid={`link-nav-branch-${slug}`}>
+              {info.streetName}
+              <span className="mt-0.5 block text-[12px] font-medium text-[#7C8B99]">Pulivendla, Kadapa District</span>
+            </a>)}
+          </div>}
+        </div>
       </nav>
       <div className="flex items-center gap-2">
         <button onClick={onEnquire} className="hidden rounded-full border-2 border-[#123A5E] px-[clamp(1.3rem,2.1vw,2.1rem)] py-[11px] text-[clamp(.9rem,1.05vw,1.06rem)] font-semibold text-[#123A5E] transition hover:bg-[#123A5E] hover:text-white md:block" data-testid="button-header-enquiry">Enquire Now</button>
         <button onClick={() => setOpen(!open)} className="rounded-md p-2 text-[#153B5B] lg:hidden" aria-label="Toggle menu" data-testid="button-mobile-menu">{open ? <X size={24} /> : <Menu size={24} />}</button>
       </div>
     </div>
-    {open && <div className="border-t border-[#EFE7D7] bg-white px-5 py-3 lg:hidden"><nav>{headerNavItems.map(([label, href]) => <a key={href} href={href} onClick={(e) => { e.preventDefault(); go(href); }} className="flex items-center justify-between border-b border-[#EFE7D7] py-3 text-[15px] font-semibold text-[#153B5B]" data-testid={`link-mobile-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}<ChevronRight size={15} /></a>)}</nav><a href="tel:+918500045678" className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#1B7A3E]" data-testid="link-mobile-phone"><Phone size={14} /> +91 85000 45678</a><button onClick={onEnquire} className="mt-3 w-full rounded-full bg-[#1B7A3E] py-3 text-sm font-bold text-white" data-testid="button-mobile-enquiry">Enquire Now</button></div>}
+    {open && <div className="border-t border-[#EFE7D7] bg-white px-5 py-3 lg:hidden">
+      <nav>
+        {items.map(([label, href]) => <a key={href} href={href} onClick={(e) => { e.preventDefault(); go(href); }} className="flex items-center justify-between border-b border-[#EFE7D7] py-3 text-[15px] font-semibold text-[#153B5B]" data-testid={`link-mobile-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}<ChevronRight size={15} /></a>)}
+        <div className="border-b border-[#EFE7D7] py-3">
+          <p className="text-[12px] font-bold uppercase tracking-[.16em] text-[#7C8B99]">Branches</p>
+          {branchLinks.map(([slug, info]) => <a key={slug} href={`/branch/${slug}`} onClick={(e) => { e.preventDefault(); go(`/branch/${slug}`); }} className="flex items-center justify-between py-2 text-[15px] font-semibold text-[#153B5B]" data-testid={`link-mobile-branch-${slug}`}>{info.streetName}<ChevronRight size={15} /></a>)}
+        </div>
+      </nav>
+      <a href="tel:+918500045678" className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#1B7A3E]" data-testid="link-mobile-phone"><Phone size={14} /> +91 85000 45678</a>
+      <button onClick={onEnquire} className="mt-3 w-full rounded-full bg-[#1B7A3E] py-3 text-sm font-bold text-white" data-testid="button-mobile-enquiry">Enquire Now</button>
+    </div>}
   </header>;
 }
 
@@ -258,52 +305,61 @@ function HeroDoodles() {
 
 /* ------------------------------------------------------------------- hero */
 
-const HERO_SLIDES = [
-  { src: '/making-lab.jpg', alt: 'Children building together in the activity room', position: '52% 48%' },
-  { src: '/smartclass.jpeg', alt: 'A smart classroom lesson at Vivekananda Concept School', position: '50% 55%' },
-  { src: '/campus-courtyard.jpg', alt: 'Students walking through the school courtyard', position: '50% 62%' },
-  { src: '/athletics-field.jpg', alt: 'Students on the athletics field', position: '50% 50%' },
+/* The hero is one long band that creeps from left to right, and the blue
+   brand panel rides in it like any other slide rather than sitting still
+   between two moving ones. The whole run appears twice and the band travels
+   exactly one run per cycle, so the duplicate is standing where the original
+   stood when it resets and the circle never shows a join. */
+const HERO_PHOTOS = [
+  { src: '/hero-cbse-lead.png', alt: 'Students studying together — CBSE LEAD curriculum', caption: 'CBSE LEAD CURRICULUM' },
+  { src: '/hero-our-values.jpg', alt: 'Our values — knowledge, discipline, values, innovation, leadership', caption: 'EMPOWERING MINDS, BUILDING CHARACTER' },
+  { src: '/hero-learn-today.jpg', alt: 'Students writing in class', caption: 'LEARN TODAY, LEAD TOMORROW' },
+  { src: '/hero-safe-journeys.jpg', alt: 'Students boarding the school bus', caption: 'SAFE JOURNEYS, BRIGHTER TOMORROWS' },
 ] as const;
 
-function HeroPanel({ image, alt, caption }: { image: string; alt: string; caption: string }) {
-  return <div className="relative min-h-[275px] overflow-hidden bg-[#F05D40] md:h-full">
-    <img src={image} alt={alt} className="absolute inset-0 h-full w-full object-cover" />
-    <div className="absolute inset-0 bg-gradient-to-tr from-[#123A5E]/45 to-transparent" />
-    <span className="absolute bottom-5 left-5 rounded bg-white/92 px-3 py-2 text-[13px] font-bold tracking-[.14em] text-[#2E6A9E]">{caption}</span>
+function HeroBrand({ place, eyebrow, headingLevel }: { place: string; eyebrow: string; headingLevel: 'b' | 'h1' }) {
+  const Title = headingLevel;
+  return <div className="relative flex h-full items-center overflow-hidden bg-gradient-to-br from-[#D3E6F6] via-[#B9D8F0] to-[#9DC6E9] px-8 py-14">
+    <span className="absolute -left-16 top-[-38px] h-[310px] w-[90px] rotate-[27deg] bg-white/45" />
+    <span className="absolute -right-12 bottom-[-60px] h-[330px] w-[60px] rotate-[26deg] bg-[#7FB2DE]/45" />
+    <div className="relative z-10 max-w-[480px] text-[#123A5E]">
+      <p className="text-[13px] font-bold tracking-[.25em] text-[#2E6A9E]">{eyebrow}</p>
+      <Title className="mt-4 block font-round text-[clamp(1.5rem,2.8vw,2.2rem)] font-extrabold leading-none tracking-[.03em]">SREE VIVEKANANDA</Title>
+      <b className="mt-2.5 block text-[clamp(.72rem,1.1vw,.85rem)] font-semibold tracking-[.15em] text-[#5A7B99]">EDUCATIONAL SOCIETY</b>
+      <p className="mt-3 font-display text-[clamp(1.2rem,2vw,1.65rem)] italic" data-testid="text-hero-place">{place}</p>
+      <p className="mt-3 max-w-[315px] text-[15px] leading-6 font-semibold uppercase tracking-wide text-[#3F5771]">Inspiring growth, creating leader</p>
+    </div>
   </div>;
 }
 
-function Hero() {
-  return <section id="top" className="bg-white">
-    <div className="grid min-h-[365px] md:h-[500px] md:grid-cols-3">
-      <HeroPanel image="/campus-courtyard.jpg" alt="The Vivekananda Concept School campus" caption="A CAMPUS BUILT FOR CHILDREN" />
-      <div className="relative flex items-center overflow-hidden bg-gradient-to-br from-[#D3E6F6] via-[#B9D8F0] to-[#9DC6E9] px-8 py-14">
-        <span className="absolute -left-16 top-[-38px] h-[310px] w-[90px] rotate-[27deg] bg-white/45" />
-        <span className="absolute -right-12 bottom-[-60px] h-[330px] w-[60px] rotate-[26deg] bg-[#7FB2DE]/45" />
-        <div className="relative z-10 max-w-[480px] text-[#123A5E]">
-          <p className="text-[13px] font-bold tracking-[.25em] text-[#2E6A9E]">WELCOME TO OUR SCHOOL</p>
-          <b className="mt-4 block font-round text-[clamp(1.5rem,2.8vw,2.2rem)] font-extrabold leading-none tracking-[.03em]">SREE VIVEKANANDA</b>
-          <b className="mt-2.5 block text-[clamp(.72rem,1.1vw,.85rem)] font-semibold tracking-[.15em] text-[#5A7B99]">EDUCATIONAL SOCIETY</b>
-          <p className="mt-3 font-display text-[clamp(1.2rem,2vw,1.65rem)] italic">PULIVENDLA</p>
-          <p className="mt-3 max-w-[315px] text-[15px] leading-6 font-semibold uppercase tracking-wide text-[#3F5771]">Inspiring growth, creating leader</p>
-        </div>
-      </div>
-      <HeroPanel image="/making-lab.jpg" alt="Vivekananda Concept School students building in the activity room" caption="HANDS-ON LEARNING" />
-  </div>
-  </section>;
+/* `cover` rather than `contain`: the box is a fixed 1600:415 ratio, so each
+   banner's height always fills it exactly — any width overflow (banners that
+   aren't cut to that same ratio, like the CBSE one) is trimmed evenly from
+   the sides rather than leaving a letterbox bar. */
+function HeroPhoto({ photo }: { photo: (typeof HERO_PHOTOS)[number] }) {
+  return <div className="relative h-full overflow-hidden bg-[#0F2A44]">
+    <img src={photo.src} alt={photo.alt} className="absolute inset-0 h-full w-full object-cover" />
+  </div>;
 }
 
-/* Wherever the school is named as a heading it is set exactly as the header sets it:
-   the crest, VIVEKANANDA in the header navy, CONCEPT SCHOOL in the header grey. */
-function SchoolName({ size = 'md' }: { size?: 'sm' | 'md' }) {
-  const small = size === 'sm';
-  return <span className="flex items-center gap-3">
-    <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className={`shrink-0 rounded-full object-cover ${small ? 'h-[58px] w-[58px]' : 'h-[74px] w-[74px]'}`} />
-    <span className="leading-none text-left">
-      <b className={`block font-round font-extrabold tracking-[.045em] text-[#123A5E] ${small ? 'text-[clamp(1rem,1.9vw,1.3rem)]' : 'text-[clamp(1.2rem,2.2vw,1.6rem)]'}`}>SREE VIVEKANANDA</b>
-      <small className={`mt-[6px] block font-semibold tracking-[.15em] text-[#7C8B99] ${small ? 'text-[clamp(.55rem,1vw,.65rem)]' : 'text-[clamp(.6rem,1.1vw,.75rem)]'}`}>EDUCATIONAL SOCIETY</small>
-    </span>
-  </span>;
+/* `place` and `eyebrow` are what a branch page changes; the crest and the
+   school's own name are the same on all four. */
+function Hero({ place = 'PULIVENDLA', eyebrow = 'WELCOME TO OUR SCHOOL', headingLevel = 'b' }: { place?: string; eyebrow?: string; headingLevel?: 'b' | 'h1' }) {
+  /* The blue brand slide is gone from the scroller, but a branch page still
+     needs its own `h1` — kept off-screen rather than dropped outright. */
+  const Title = headingLevel;
+  const slideCount = HERO_PHOTOS.length * 2;
+  return <section id="top" className="overflow-hidden bg-white">
+    <Title className="sr-only">{`Sree Vivekananda Educational Society — ${place}`}</Title>
+    {/* Height tracks the banners' own 1600×415 ratio, capped at 600px. */}
+    <div className="hero-track flex aspect-[1600/415] max-h-[600px]" style={{ '--slide-count': slideCount } as CSSProperties}>
+      {[0, 1].map((copy) => <Fragment key={copy}>
+        {HERO_PHOTOS.map((photo) => <div key={`${copy}-${photo.src}`} className="hero-slide shrink-0" aria-hidden={copy === 1 || undefined}>
+          <HeroPhoto photo={photo} />
+        </div>)}
+      </Fragment>)}
+    </div>
+  </section>;
 }
 
 function Heading({ title, accent }: { title?: string; accent?: string }) {
@@ -312,8 +368,8 @@ function Heading({ title, accent }: { title?: string; accent?: string }) {
 
 function Intro() {
   return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" /><div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
-    <div className="reveal"><h2><SchoolName /></h2><div className="ornament mt-2 flex justify-center"><span className="ornament-mark">◆</span></div><p className="mt-5 max-w-[470px] text-[17px] leading-6 text-black">Igniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
-    <div className="reveal relative mx-auto w-full max-w-[400px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/swami-vivekananda-quote.jpg" alt="Educate and raise the masses, and thus alone a nation is possible — Swami Vivekananda" className="block w-full rounded-2xl" data-testid="img-about" /></div>
+    <div className="reveal"><p className="max-w-[470px] text-[17px] leading-6 text-black"><span className="font-extrabold uppercase">I</span>gniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
+    <div className="reveal relative mx-auto aspect-[1254/1030] w-full max-w-[460px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/vivekananda.png" alt="Educate and raise the masses, and thus alone a nation is possible — Swami Vivekananda" className="h-full w-full rounded-2xl object-cover" data-testid="img-about" /></div>
   </div>
   <div className="container-wide mt-10 md:mt-14">
     <div className="reveal text-center mb-2">
@@ -359,12 +415,30 @@ const programmes: Programme[] = [
   { name: 'High-School', image: '/making-lab.jpg', copy: 'Experiential and student-centric learning prepares students for their next stage with focus, independence and purpose.' },
 ];
 const resultImages = [
-  { src: '/results-2.jpeg', caption: 'Town Toppers — SSC Results 2026' },
+  { src: '/results-2.jpeg', caption: 'Town Toppers — SSC Results 2026', contain: true },
   { src: '/results-1.jpeg', caption: 'Our Achievers — SSC Results 2026' },
   { src: '/results-3.jpeg', caption: 'More Achievers — SSC Results 2026' },
 ];
+/* A rectangular card rather than the round gallery orb: these are results
+   posters with fine print (names, marks) that a circular crop would slice
+   into, so the full rectangle is what stays legible. */
+/* Fixed aspect ratio rather than each image's own natural size, so all three
+   cards match. `contain` (rather than `cover`) is for the one poster — Town
+   Toppers — that's noticeably more square than the 4:3 box, so cropping it
+   to cover would cut its bottom row of names off; the others fit closely
+   enough that `cover` reads as a clean fill. */
+function ResultCard({ src, alt, caption, colour, contain = false }: { src: string; alt: string; caption: string; colour: string; contain?: boolean }) {
+  return <figure className="flex flex-col items-center gap-4">
+    <button type="button" onClick={() => window.open(src, '_blank')} className="group block aspect-[4/3] w-full overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_10px_30px_rgba(31,40,56,.16)] ring-1 ring-[#1C2A37]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid="button-result-card">
+      <img src={src} alt={alt} className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${contain ? 'object-contain' : 'object-cover object-top'}`} loading="lazy" />
+    </button>
+    <span className="h-4 w-4 rounded-full" style={{ backgroundColor: colour }} aria-hidden="true" />
+    <figcaption className="max-w-[260px] text-center text-[15px] font-semibold leading-6 text-[#0F4C5C] sm:text-[16px]">{caption}</figcaption>
+  </figure>;
+}
+
 function Results() {
-  return <section id="results" className="relative py-6 md:py-9"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[900px] grid-cols-3 gap-2 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">{resultImages.map((item, index) => <a key={item.src} href={item.src} target="_blank" rel="noreferrer" className="reveal school-card block overflow-hidden rounded border border-[#1F2838] bg-white shadow-[0_2px_5px_rgba(31,40,56,.18)]" data-testid={`card-result-${index + 1}`}><img src={item.src} alt={item.caption} className={`w-full object-cover object-center aspect-[1310/1222] ${index > 0 ? '' : 'sm:aspect-auto sm:h-auto'}`} /><p className="px-1 py-2 text-center text-[10px] font-semibold leading-[1.3] text-[#0F4C5C] sm:px-4 sm:py-4 sm:text-[18px] sm:leading-normal">{item.caption}</p></a>)}</div></div></section>;
+  return <section id="results" className="relative py-6 md:py-9"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[1200px] grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-3">{resultImages.map((item, index) => <div key={item.src} className="reveal" data-testid={`card-result-${index + 1}`}><ResultCard src={item.src} alt={item.caption} caption={item.caption} colour={ORB_COLOURS[index % ORB_COLOURS.length]} contain={item.contain} /></div>)}</div></div></section>;
 }
 
 /* Each card shows either a line icon or a photograph in the same dashed circle,
@@ -430,41 +504,113 @@ function BusRoutes() {
 }
 
 function Facilities() {
-  const [, navigate] = useLocation();
   return <section id="media" className="py-5 md:py-7"><div className="container-wide">
     <Heading accent="Facilities" />
-    <div className="mx-auto mt-6 grid max-w-[760px] grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-10 sm:gap-y-8">
-      {facilities.map(({ icon: Icon, image, contain, title, copy }, index) => <article key={title} className="reveal flex flex-col items-center text-center" data-testid={`card-facility-${index + 1}`}>
-        <span className={`facility-circle grid h-16 w-16 place-items-center overflow-hidden rounded-full p-1 sm:h-24 sm:w-24 ${index % 2 === 0 ? 'text-[#0F4C5C]' : 'text-black'}`}>{image ? <img src={image} alt="" className={`h-full w-full rounded-full ${contain ? 'object-contain p-2' : 'object-cover'}`} /> : Icon ? <Icon size={40} /> : null}</span>
-        <h3 className="mt-3 font-sans text-[14px] font-medium leading-[1.25] text-black sm:text-[19px] sm:leading-snug">{title}</h3>
-        <p className="mt-1.5 max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[13.5px] sm:leading-[1.5]">{copy}</p>
-        {/* A real anchor so it can be opened in a new tab or read as a link,
-            with the click intercepted for a client-side route. */}
-        {index === 0 && null}
-      </article>)}
+    <div className="mx-auto mt-8 grid max-w-[900px] grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-10 sm:gap-y-12">
+      {/* Not a flex wrapper: `GalleryOrb`'s own figure needs to be a normal
+          block box so its `w-full` button resolves against the full column
+          width — inside a flex parent with `items-center` it would shrink to
+          content instead and the orb would render tiny. */}
+      {facilities.map(({ image, contain, title, copy }, index) => <div key={title} className="reveal text-center" data-testid={`card-facility-${index + 1}`}>
+        <GalleryOrb src={image!} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} contain={contain} />
+        <h3 className="mt-4 font-sans text-[14px] font-medium leading-[1.25] text-black sm:text-[19px] sm:leading-snug">{title}</h3>
+        <p className="mt-1.5 mx-auto max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[13.5px] sm:leading-[1.5]">{copy}</p>
+      </div>)}
     </div>
   </div></section>;
 }
 
-const gallery = ['/making-lab.jpg', '/campus-courtyard.jpg', '/athletics-field.jpg', '/campus-courtyard.jpg', '/making-lab.jpg', '/athletics-field.jpg'];
-const galleryFrames = [
-  { shape: 'g-shape-arch', colour: '#0F4C5C' },
-  { shape: 'g-shape-arch', colour: '#1C2A37' },
-  { shape: 'g-shape-arch', colour: '#E0A93B' },
-  { shape: 'g-shape-arch', colour: '#2F7D6E' },
-  { shape: 'g-shape-arch', colour: '#C2591B' },
-  { shape: 'g-shape-arch', colour: '#5B3E96' },
+const gallery = ['/making-lab.jpg', '/campus-courtyard.jpg', '/athletics-field.jpg', '/smartclass.jpeg', '/schoolbus.jpeg', '/our-story-poster.jpg'];
+
+/* One colour per orb, cycled. The ring is drawn on a 100-unit circle with
+   `pathLength`, so the two arcs and the four dots that cap them are placed in
+   percentages of the circumference rather than in pixels and hold their
+   positions at any size. */
+const ORB_COLOURS = ['#0F4C5C', '#C2591B', '#5B3E96', '#E0A93B', '#2F7D6E', '#1C2A37'] as const;
+const ORB_CAPS = [
+  { x: 93.68, y: 67.30 }, { x: 30.01, y: 92.52 }, { x: 6.32, y: 32.70 }, { x: 69.99, y: 7.48 },
 ] as const;
-const faculty = [
-  { role: 'Principal', copy: 'Leads the academic vision of the school and mentors both teachers and students.' },
-  { role: 'Academic Coordinator', copy: 'Plans the CBSE-aligned curriculum and keeps every class on track through the year.' },
-  { role: 'Science & Mathematics Faculty', copy: 'Builds conceptual strength with experiments, problem solving and exam preparation.' },
-  { role: 'Languages & Humanities Faculty', copy: 'Develops reading, writing and expression in English, Hindi and Telugu.' },
-] as const;
-/* `heading` off when the page above already carries the title as its `h1` —
-   otherwise the section repeats it and the page has two competing headings. */
-function Faculty({ heading = true }: { heading?: boolean }) {
-  return <section id="faculty" className="py-6 md:py-9"><div className="container-wide">{heading && <Heading title="Our" accent="Faculty" />}<p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[17px] leading-6 text-black">Experienced teachers who know every child by name, and stay with them from the first lesson to the final board exam.</p><div className="mx-auto mt-8 grid max-w-[900px] gap-6 sm:grid-cols-2 lg:grid-cols-4">{faculty.map((member, index) => <article key={member.role} className="reveal school-card rounded-2xl border border-[#1C2A37]/20 bg-white/85 p-5 text-center shadow-[0_4px_12px_rgba(31,40,56,.12)]" data-testid={`card-faculty-${index + 1}`}><span className="mx-auto grid h-20 w-20 place-items-center rounded-full border-2 border-dashed border-[#1C2A37]/40 text-black"><GraduationCap size={34} /></span><h3 className="mt-4 font-sans text-[18px] font-semibold text-black">{member.role}</h3><p className="mt-2 text-[15px] leading-6 text-black/75">{member.copy}</p></article>)}</div></div></section>;
+
+/* `spin` still sets each orb's starting angle so a row of them doesn't all
+   begin in lockstep; the continuous rotation itself comes from the
+   `orb-ring-spin` animation in index.css, alternating direction by parity so
+   neighbouring rings don't turn the same way. */
+function OrbRing({ colour, spin }: { colour: string; spin: number }) {
+  return <div className="pointer-events-none absolute inset-0" style={{ transform: `rotate(${spin}deg)` }} aria-hidden="true">
+    <svg viewBox="0 0 100 100" className={`h-full w-full orb-ring-spin ${spin % 2 === 0 ? 'orb-ring-spin-reverse' : ''}`}>
+      <circle cx="50" cy="50" r="47" fill="none" stroke={colour} strokeWidth="1" strokeLinecap="round" strokeDasharray=".4 4.2" opacity=".75" />
+      <circle cx="50" cy="50" r="47" fill="none" stroke={colour} strokeWidth="1.9" strokeLinecap="round" pathLength={100} strokeDasharray="26 24" strokeDashoffset="-6" />
+      {ORB_CAPS.map((cap) => <circle key={`${cap.x}-${cap.y}`} cx={cap.x} cy={cap.y} r="2.3" fill={colour} />)}
+    </svg>
+  </div>;
+}
+
+function GalleryOrb({ src, alt, colour, spin, caption, contain = false }: { src: string; alt: string; colour: string; spin: number; caption?: string; contain?: boolean }) {
+  return <figure className="flex flex-col items-center gap-4">
+    <button type="button" onClick={() => window.open(src, '_blank')} className="group relative block aspect-square w-full max-w-[250px] rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid="button-gallery-orb">
+      <span className="absolute inset-[6%] rounded-full bg-white shadow-[0_10px_30px_rgba(31,40,56,.16)]" />
+      <span className="absolute inset-[11%] block overflow-hidden rounded-full">
+        <img src={src} alt={alt} className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${contain ? 'object-contain p-4' : 'object-cover'}`} loading="lazy" />
+      </span>
+      <OrbRing colour={colour} spin={spin} />
+    </button>
+    <span className="h-4 w-4 rounded-full" style={{ backgroundColor: colour }} aria-hidden="true" />
+    {caption && <figcaption className="max-w-[260px] text-center text-[15px] font-semibold leading-6 text-[#0F4C5C] sm:text-[16px]">{caption}</figcaption>}
+  </figure>;
+}
+
+function GalleryOrbs({ images, label, className = 'grid-cols-2 md:grid-cols-3' }: { images: readonly string[]; label: string; className?: string }) {
+  return <div className={`grid gap-x-6 gap-y-9 ${className}`}>
+    {images.map((src, index) => <GalleryOrb key={`${src}-${index}`} src={src} alt={`${label} ${index + 1}`} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} />)}
+  </div>;
+}
+
+/* Placeholder roster - the layout is the point; swap the names, the years and
+   the portraits for the real staff list. `photo` is optional and the card
+   falls back to the teacher's initials, so a missing headshot never leaves a
+   hole in the grid. */
+const FACULTY: { name: string; rank: string; subject: string; years: string; tint: string; accent: string; icon: typeof BookText; photo?: string }[] = [
+  { name: 'Smt. Anusha R.', rank: 'Senior Lecturer', subject: 'Telugu', years: '12+ yrs', tint: '#EDF7EE', accent: '#2E7D32', icon: BookText },
+  { name: 'Ms. Kavya M.', rank: 'Lecturer', subject: 'Hindi', years: '8+ yrs', tint: '#FFF4EA', accent: '#E65100', icon: BookMarked },
+  { name: 'Mr. Ramesh K.', rank: 'Lecturer', subject: 'English', years: '6+ yrs', tint: '#ECF3FC', accent: '#1565C0', icon: BookOpen },
+  { name: 'Smt. Deepa T.', rank: 'Junior Lecturer', subject: 'Mathematics', years: '3+ yrs', tint: '#F6EEFA', accent: '#6A1B9A', icon: Calculator },
+  { name: 'Mr. Suresh P.', rank: 'Lecturer', subject: 'Science', years: '5+ yrs', tint: '#E8F6F4', accent: '#00695C', icon: FlaskConical },
+  { name: 'Ms. Lakshmi V.', rank: 'Lecturer', subject: 'Social Studies', years: '4+ yrs', tint: '#FDEEEB', accent: '#BF360C', icon: Globe2 },
+];
+
+/* `heading` off when the page above already carries the title as its `h1` -
+   otherwise the section repeats it and the page has two competing headings.
+   `branchOffset` rotates the starting member so the three branch pages,
+   which otherwise share this exact roster, don't all show it in the same
+   order — each page leads with a different teacher and icon. */
+function Faculty({ heading = true, branchOffset = 0 }: { heading?: boolean; branchOffset?: number }) {
+  const roster = [...FACULTY.slice(branchOffset % FACULTY.length), ...FACULTY.slice(0, branchOffset % FACULTY.length)];
+  return <section id="faculty" className="py-8 md:py-12"><div className="container-wide">
+    <div className="mb-8 text-center">
+      {heading && <>
+        <h2 className="section-heading text-[clamp(1.6rem,2.8vw,2.2rem)]"><em>Faculty</em></h2>
+        <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
+      </>}
+      <p className="mt-3 text-[15px] text-[#3F5771]">Dedicated teachers across all subjects, guiding every student with care and expertise.</p>
+    </div>
+    {/* One row of six once there is room for it; just the portrait circle
+        and the words beneath it, no card around them. */}
+    <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
+      {roster.map((member, index) => <article key={member.name} className="reveal flex flex-col items-center gap-3 text-center" data-testid={`card-faculty-${index + 1}`}>
+        <span className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-full ring-4 ring-white shadow-[0_4px_14px_rgba(31,40,56,.12)]" style={{ backgroundColor: `${member.accent}1F`, color: member.accent }}>
+          {member.photo
+            ? <img src={member.photo} alt="" className="h-full w-full object-cover" loading="lazy" />
+            : <member.icon size={30} strokeWidth={1.75} />}
+        </span>
+        <div>
+          <h3 className="text-[15px] font-bold leading-tight" style={{ color: member.accent }}>{member.name}</h3>
+          <p className="mt-1.5 text-[13px] leading-5 text-black/70">{member.rank}</p>
+          <p className="text-[13px] leading-5 text-black/70">{member.subject}</p>
+          <p className="text-[13px] leading-5 text-black/70">Experience: {member.years}</p>
+        </div>
+      </article>)}
+    </div>
+  </div></section>;
 }
 
 function StoryVideo() {
@@ -492,10 +638,11 @@ function StoryVideo() {
   </>;
 }
 
-function Gallery() {
-  return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><div className="container-wide"><Heading title="PHOTO" accent="GALLERY" /><div className="mx-auto mt-7 grid max-w-[1120px] items-center gap-8 md:grid-cols-[210px_1fr]">
+/* `heading` off when the page above already carries the title as its `h1`. */
+function Gallery({ heading = true }: { heading?: boolean }) {
+  return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><div className="container-wide">{heading && <Heading title="PHOTO" accent="GALLERY" />}<div className="mx-auto mt-7 grid max-w-[1120px] items-center gap-8 md:grid-cols-[210px_1fr]">
     <div className="reveal relative mx-auto w-full max-w-[210px] overflow-hidden rounded-2xl border-[5px] border-white bg-[#123A5E] shadow-[0_10px_26px_rgba(31,40,56,.2)]"><div className="relative aspect-[9/16] overflow-hidden rounded-xl"><StoryVideo /></div></div>
-    <div className="grid grid-cols-2 gap-x-5 gap-y-6 md:grid-cols-3">{gallery.map((src, index) => { const frame = galleryFrames[index % galleryFrames.length]; return <button key={`${src}-${index}`} className={`group relative block aspect-[1.5] w-full p-[6px] ${frame.shape}`} style={{ backgroundColor: frame.colour }} onClick={() => window.open(src, '_blank')} data-testid={`button-gallery-${index + 1}`}><span className={`relative block h-full w-full overflow-hidden bg-white ${frame.shape}`}><img src={src} alt={`School life gallery ${index + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /><span className="absolute inset-0 bg-[#0F4C5C]/0 transition-colors group-hover:bg-[#0F4C5C]/20" /></span></button>; })}</div>
+    <GalleryOrbs images={gallery} label="School life gallery" />
   </div></div></section>;
 }
 
@@ -517,8 +664,12 @@ function Admissions({ onEnquire }: { onEnquire: () => void }) {
   return <section id="career" className="py-4 text-center"><button onClick={onEnquire} className="rounded-full border-2 border-[#0F4C5C] px-10 py-5 text-base font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white" data-testid="button-admissions-enquiry">START YOUR ADMISSION ENQUIRY <ArrowRight className="ml-2 inline" size={20} /></button></section>;
 }
 
-function Footer({ onEnquire }: { onEnquire: () => void }) {
-  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-5 md:py-7"><div className="grid gap-5 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="text-center"><a href="#top" className="mx-auto flex w-max flex-col items-center gap-2 text-white" data-testid="link-logo-footer"><img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-20 w-20 rounded-full border-[3px] border-white object-cover shadow" /><span className="block text-center leading-[1.15]"><b className="block text-[15px] tracking-[.06em]">SREE VIVEKANANDA</b><small className="block text-[11px] tracking-[.18em]">EDUCATIONAL SOCIETY</small><small className="block text-[11px] tracking-[.18em]">PULIVENDLA</small></span></a><small className="mt-2 block text-[11px] tracking-[.13em] text-white uppercase">INSPIRING GROWTH, CREATING LEADER</small><p className="mx-auto mt-3 max-w-[260px] text-center text-[13px] leading-[1.4]">Sree Vivekananda Educational Society, Pulivendla, under the guidance of a dedicated team of educators.</p></div></div><div><h3 className="text-[15px] font-semibold">Helpful Links</h3><div className="mt-3 grid gap-1.5 text-[14px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="text-[15px] font-semibold">Address</h3><a href="tel:+918500045678" className="mt-3 flex items-center gap-2 text-[14px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href="https://www.google.com/maps/search/?api=1&query=3-4-55%2C+Guntha+Bazar+Rd%2C+near+Raja+Reddy+Hospital%2C+Pulivendla%2C+516390" target="_blank" rel="noreferrer" className="mt-2.5 flex gap-2 text-[14px] leading-[1.4] hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> 3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-2.5 flex items-center gap-2 text-[14px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-2.5 flex items-center gap-2 text-[14px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-4 rounded border border-white px-3 py-1.5 text-[12px] font-semibold hover:bg-white hover:text-[#0F4C5C]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-5 border-t border-white/30 pt-3 text-[12px]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</div></div></footer>;
+/* `branchLabel`/`branchAddress` let a branch page swap in its own street
+   address here instead of the head-office one — the map link is rebuilt
+   from whichever address is showing, so it always points at the right pin. */
+function Footer({ onEnquire, branchLabel, branchAddress }: { onEnquire: () => void; branchLabel?: string; branchAddress?: string }) {
+  const address = branchAddress ?? '3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390';
+  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-5 md:py-7"><div className="grid gap-5 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="text-center"><a href="#top" className="mx-auto flex w-max flex-col items-center gap-2 text-white" data-testid="link-logo-footer"><img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-20 w-20 rounded-full border-[3px] border-white object-cover shadow" /><span className="block text-center leading-[1.15]"><b className="block text-[15px] tracking-[.06em]">SREE VIVEKANANDA</b><small className="block text-[11px] tracking-[.18em]">EDUCATIONAL SOCIETY</small><small className="block text-[11px] tracking-[.18em]">PULIVENDLA</small></span></a><small className="mt-2 block text-[11px] tracking-[.13em] text-white uppercase">INSPIRING GROWTH, CREATING LEADER</small><p className="mx-auto mt-3 max-w-[260px] text-center text-[13px] leading-[1.4]">Sree Vivekananda Educational Society, Pulivendla, under the guidance of a dedicated team of educators.</p></div></div><div><h3 className="text-[15px] font-semibold">Helpful Links</h3><div className="mt-3 grid gap-1.5 text-[14px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="text-[15px] font-semibold">Address</h3>{branchLabel && <p className="mt-3 text-[13px] font-semibold text-white/90" data-testid="text-footer-branch-label">{branchLabel}</p>}<a href="tel:+918500045678" className="mt-3 flex items-center gap-2 text-[14px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} target="_blank" rel="noreferrer" className="mt-2.5 flex gap-2 text-[14px] leading-[1.4] hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> {address}</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-2.5 flex items-center gap-2 text-[14px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-2.5 flex items-center gap-2 text-[14px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-4 rounded border border-white px-3 py-1.5 text-[12px] font-semibold hover:bg-white hover:text-[#0F4C5C]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-5 border-t border-white/30 pt-3 text-[12px]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</div></div></footer>;
 }
 
 /* The dotted corner marks on the brand panel are decoration only, so they are drawn with a repeating
@@ -658,14 +809,33 @@ function CallFab({ onEnquire }: { onEnquire: () => void }) {
    footer, call widget and the enquiry modal. Children come in as a function so
    a page can wire its own buttons to the same modal without the state having to
    be lifted any further or threaded through a context. */
-function PageShell({ title, description, admissionsPopup: withPopup = false, children }: { title: string; description: string; admissionsPopup?: boolean; children: (onEnquire: () => void) => ReactNode }) {
-  const [modal, setModal] = useState(false); const [admissionsPopup, setAdmissionsPopup] = useState(withPopup); useReveals();
+/* Stamped the first time the poster is shown, so a returning visitor — or
+   anyone moving between pages — is not handed it again. */
+const ADMISSIONS_POPUP_KEY = 'vces.admissions-popup-seen';
+
+function PageShell({ title, description, admissionsPopup: withPopup = false, footerBranchLabel, footerBranchAddress, children }: { title: string; description: string; admissionsPopup?: boolean; footerBranchLabel?: string; footerBranchAddress?: string; children: (onEnquire: () => void) => ReactNode }) {
+  const [modal, setModal] = useState(false); const [admissionsPopup, setAdmissionsPopup] = useState(false);
+  /* Keyed on the location so the page is rebuilt — and so comes up again —
+     when one branch route replaces another, where the component itself would
+     otherwise stay mounted and never replay. */
+  const [location] = useLocation();
+  useReveals(location);
+  useEffect(() => {
+    if (!withPopup) return;
+    /* Private-mode browsers throw on `localStorage`; the poster is not worth
+       a blank page, so a failure just means it is shown. */
+    try {
+      if (window.localStorage.getItem(ADMISSIONS_POPUP_KEY)) return;
+      window.localStorage.setItem(ADMISSIONS_POPUP_KEY, '1');
+    } catch { /* no storage — show it and move on */ }
+    setAdmissionsPopup(true);
+  }, [withPopup]);
   useEffect(() => { document.title = title; const set = (name: string, content: string) => { let meta = document.querySelector(`meta[name="${name}"]`); if (!meta) { meta = document.createElement('meta'); meta.setAttribute('name', name); document.head.appendChild(meta); } meta.setAttribute('content', content); }; set('description', description); }, [title, description]);
   const openEnquiry = () => setModal(true);
   return <div className="grain relative min-h-[100dvh] overflow-hidden bg-white">
-    <div className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/background.jpeg')" }} aria-hidden="true" />
+    <div className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style={{ backgroundImage: "url('/background.jpeg')" }} aria-hidden="true" />
     <WallpaperLayer />
-    <div className="relative z-10"><Header onEnquire={openEnquiry} />{children(openEnquiry)}<Footer onEnquire={openEnquiry} /></div>
+    <div key={location} className="page-reveal relative z-10"><Header onEnquire={openEnquiry} />{children(openEnquiry)}<Footer onEnquire={openEnquiry} branchLabel={footerBranchLabel} branchAddress={footerBranchAddress} /></div>
     <CallFab onEnquire={openEnquiry} />
     {modal && <EnquiryModal onClose={() => setModal(false)} />}{admissionsPopup && <AdmissionsPopup onClose={() => setAdmissionsPopup(false)} onEnquire={openEnquiry} />}
   </div>;
@@ -684,16 +854,14 @@ function BusRoutesPage() {
   </PageShell>;
 }
 
-function FacultyPage() {
-  return <PageShell title="Our Faculty | Vivekananda Concept School" description="The teachers at Vivekananda Concept School, Pulivendla — experienced faculty across sciences, mathematics, languages and humanities who stay with every child from the first lesson to the final board exam.">
+function GalleryPage() {
+  return <PageShell title="Photo Gallery | Sree Vivekananda Educational Society" description="Photographs from Sree Vivekananda Educational Society, Pulivendla — the campus, the classrooms, the playing fields and the school buses.">
     {(onEnquire) => <>
-      {/* Title only. The section below brings its own standfirst, so repeating
-          one here would stack two paragraphs saying the same thing. */}
       <section className="pt-8 md:pt-12"><div className="container-wide flex flex-col items-center">
-        <h1 className="section-heading text-center text-[clamp(2rem,3.6vw,2.8rem)]">Our <em>Faculty</em></h1>
+        <h1 className="section-heading text-center text-[clamp(2rem,3.6vw,2.8rem)]">Photo <em>Gallery</em></h1>
         <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
       </div></section>
-      <Faculty heading={false} />
+      <Gallery heading={false} />
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
@@ -702,132 +870,79 @@ function FacultyPage() {
 function Home() {
   return <PageShell title="Vivekananda Concept School | Pulivendla" description="Vivekananda Concept School in Pulivendla offers thoughtful education from Pre-School through High-School." admissionsPopup>
     {/* Faculty lives on /faculty now, reached from the header. */}
-    {(onEnquire) => <><Hero /><Intro /><Results /><Facilities /><Gallery /><Testimonials /><Admissions onEnquire={onEnquire} /></>}
+    {/* Gallery has a page of its own now — the header link goes there. */}
+    {(onEnquire) => <><Hero /><Intro /><Results /><Facilities /><Testimonials /><Admissions onEnquire={onEnquire} /></>}
   </PageShell>;
 }
 
-/* ─────────────────────────── BRANCH FACULTY ─────────────────────────── */
-const BRANCH_SUBJECTS = [
-  { label: 'Telugu', icon: BookOpen, color: '#E8F5E9', accent: '#2E7D32' },
-  { label: 'Hindi', icon: BookMarked, color: '#FFF3E0', accent: '#E65100' },
-  { label: 'English', icon: BookText, color: '#E3F2FD', accent: '#1565C0' },
-  { label: 'Mathematics', icon: Calculator, color: '#F3E5F5', accent: '#6A1B9A' },
-  { label: 'Science', icon: FlaskConical, color: '#E0F7FA', accent: '#00695C' },
-  { label: 'Social Studies', icon: Globe2, color: '#FBE9E7', accent: '#BF360C' },
-] as const;
+/* ─────────────────────────── BRANCH PAGE TEMPLATE ─────────────────────────── */
+type BranchInfo = { title: string; streetName: string; fullAddress: string; description: string; about: readonly string[]; quote: string; gallery: readonly string[] };
 
-function BranchFaculty() {
+function BranchGallery({ streetName, images }: { streetName: string; images: readonly string[] }) {
   return (
     <section className="py-8 md:py-12">
       <div className="container-wide">
-        <div className="text-center mb-8">
-          <h2 className="section-heading text-[clamp(1.6rem,2.8vw,2.2rem)]">Our <em>Faculty</em></h2>
+        <div className="text-center">
+          <h2 className="section-heading text-[clamp(1.6rem,2.8vw,2.2rem)]">Photo <em>Gallery</em></h2>
           <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
-          <p className="mt-3 text-[15px] text-[#3F5771]">Dedicated teachers across all subjects, guiding every student with care and expertise.</p>
+          <p className="mt-3 text-[15px] text-[#3F5771]">A look at life on our {streetName} campus.</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-          {BRANCH_SUBJECTS.map(({ label, icon: Icon, color, accent }) => (
-            <div key={label} className="reveal flex flex-col items-center gap-3 rounded-2xl p-6 shadow-sm border border-white/60" style={{ backgroundColor: color }}>
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
-                <Icon size={32} style={{ color: accent }} />
-              </div>
-              <div className="text-center">
-                <p className="font-bold text-[15px]" style={{ color: accent }}>{label}</p>
-                <p className="text-[13px] text-black/60 mt-0.5">Faculty</p>
-              </div>
-            </div>
-          ))}
+        <div className="mt-9">
+          <GalleryOrbs images={images} label={`${streetName} branch gallery`} className="grid-cols-2 md:grid-cols-4" />
         </div>
       </div>
     </section>
   );
 }
 
-/* ─────────────────────────── BRANCH PAGE TEMPLATE ─────────────────────────── */
-type BranchInfo = { title: string; streetName: string; fullAddress: string; description: string; mapQuery: string; mapLabel: string; busStopName: string };
-
-function BranchBusRoute({ stopName }: { stopName: string }) {
-  const route = busRoutes.find((r) => r.stop === stopName);
-  if (!route) return null;
+function BranchPageTemplate({ branch, branchOffset = 0 }: { branch: BranchInfo; branchOffset?: number }) {
   return (
-    <section className="py-8 md:py-10 bg-white/50">
-      <div className="container-wide">
-        <div className="text-center mb-6">
-          <h2 className="section-heading text-[clamp(1.4rem,2.4vw,1.9rem)]">Bus <em>Route</em></h2>
-          <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
-          <p className="mt-3 text-[14px] text-[#3F5771]">Our school bus picks up students from the following areas on the <strong>{stopName}</strong> route.</p>
-        </div>
-        <div className="mx-auto max-w-[720px] rounded-2xl border border-[#1C2A37]/20 bg-white/85 p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <Bus size={18} className="text-[#0F4C5C]" />
-            <h3 className="font-semibold text-[15px] text-[#0F4C5C]">Sree Swamy Vivekananda School — {stopName}</h3>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {route.areas.map((area) => (
-              <span key={area} className="rounded-full bg-[#E8F4F8] px-3 py-1 text-[13px] text-[#0F4C5C] font-medium">{area}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function BranchPageTemplate({ branch }: { branch: BranchInfo }) {
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${branch.mapQuery}`;
-  return (
-    <PageShell title={`${branch.streetName} Branch | Sree Vivekananda Educational Society`} description={branch.description}>
+    <PageShell
+      title={`${branch.streetName} Branch | Sree Vivekananda Educational Society`}
+      description={branch.description}
+      footerBranchLabel={`Sree Swamy Vivekananda School — ${branch.streetName}`}
+      footerBranchAddress={branch.fullAddress}
+    >
       {(onEnquire) => <>
-        {/* Hero Info */}
-        <section className="pt-8 md:pt-12 pb-6">
+        {/* The same hero the home page runs, scrolling photographs and all,
+            with the branch standing in for the town. */}
+        <Hero place={branch.streetName} eyebrow="SREE SWAMY VIVEKANANDA SCHOOL" headingLevel="h1" />
+        {/* `#about` in the header finds this before it thinks about routing
+            home, so About Us lands on the branch you are actually reading. */}
+        <section id="about" className="py-8 md:py-11">
           <div className="container-wide">
-            <div className="grid gap-10 md:grid-cols-[1fr_1fr] md:items-start">
-              {/* Left — Logo + Name + Address */}
-              <div className="flex flex-col items-center md:items-start text-center md:text-left gap-5">
-                <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-28 w-28 rounded-full object-cover shadow-lg border-4 border-white" />
-                <div>
-                  <p className="text-[13px] font-bold tracking-[.2em] text-[#2E6A9E] uppercase">Sree Vivekananda Educational Society</p>
-                  <h1 className="mt-2 font-round text-[clamp(1.5rem,3vw,2.4rem)] font-extrabold leading-tight text-[#123A5E]">SREE SWAMY<br />VIVEKANANDA SCHOOL</h1>
-                  <p className="mt-2 text-[clamp(1.1rem,1.8vw,1.4rem)] font-bold text-[#1B7A3E]">{branch.streetName}</p>
-                  <p className="mt-1 text-[15px] text-black/70 leading-6">{branch.fullAddress}</p>
-                  <p className="mt-4 max-w-[400px] text-[14px] leading-6 text-[#3F5771] italic">{branch.description}</p>
-                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-                    className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#123A5E] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#0F2E4A] transition">
-                    <MapPin size={15} /> Get Directions <ExternalLink size={13} />
-                  </a>
+            <Heading title="About" accent="Us" />
+            <div className="mt-7 grid gap-8 md:grid-cols-[1fr_1fr] md:items-center">
+              <div className="reveal">
+                {branch.about.map((paragraph, index) => <p key={paragraph.slice(0, 40)} className={`text-[15px] leading-7 text-black/75 ${index > 0 ? 'mt-4' : ''}`}>{paragraph}</p>)}
+              </div>
+              {/* The gallery's orb, with words where the photograph goes. The
+                  inset is a percentage so the text box scales with the circle
+                  and the longest of the three quotes keeps its corners inside
+                  the curve. */}
+              <figure className="reveal relative mx-auto aspect-square w-full max-w-[400px]">
+                <span className="absolute inset-[6%] rounded-full bg-white shadow-[0_10px_30px_rgba(31,40,56,.16)]" />
+                <OrbRing colour="#0F4C5C" spin={0} />
+                <div className="absolute inset-[15%] flex flex-col items-center justify-center gap-3 text-center">
+                  <Quote className="h-6 w-6 shrink-0 text-[#0F4C5C]" fill="currentColor" aria-hidden="true" />
+                  <blockquote className="font-display text-[clamp(.85rem,1.3vw,1.05rem)] italic leading-7 text-[#123A5E]" data-testid="text-branch-quote">{branch.quote}</blockquote>
+                  <figcaption className="text-[13px] font-semibold text-[#0F4C5C]">— Swami Vivekananda</figcaption>
                 </div>
-              </div>
-              {/* Right — Map */}
-              <div className="flex flex-col gap-3">
-                <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-2xl border-4 border-white shadow-lg hover:shadow-xl transition group">
-                  <div className="relative bg-[#E8EEF4] flex flex-col items-center justify-center gap-3 p-10 min-h-[280px]">
-                    <div className="absolute inset-0 bg-[url('/background.jpeg')] bg-cover bg-center opacity-20 rounded-2xl" />
-                    <div className="relative z-10 flex flex-col items-center gap-3 text-center">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow">
-                        <MapPin size={28} className="text-[#C62828]" />
-                      </div>
-                      <p className="font-bold text-[17px] text-[#123A5E]">{branch.mapLabel}</p>
-                      <p className="text-[13px] text-black/60">Pulivendla, Kadapa District,<br />Andhra Pradesh – 516390</p>
-                      <div className="mt-2 flex items-center gap-1.5 rounded-full bg-[#123A5E] px-4 py-1.5 text-[13px] font-semibold text-white group-hover:bg-[#0F2E4A] transition">
-                        <ExternalLink size={13} /> Open in Google Maps
-                      </div>
-                    </div>
-                  </div>
-                </a>
-                <p className="text-center text-[12px] text-black/45">Click to open in Google Maps</p>
-              </div>
+              </figure>
             </div>
           </div>
         </section>
-        {/* Faculty */}
-        <BranchFaculty />
-        {/* Bus Route */}
-        <BranchBusRoute stopName={branch.busStopName} />
+        <Faculty branchOffset={branchOffset} />
+        <BranchGallery streetName={branch.streetName} images={branch.gallery} />
         <Admissions onEnquire={onEnquire} />
       </>}
     </PageShell>
   );
 }
+
+/* Each branch shows the same photographs in its own order, so the three
+   gallery pages do not scroll past as one repeated grid. */
+const BRANCH_PHOTOS = ['/campus-courtyard.jpg', '/making-lab.jpg', '/smartclass.jpeg', '/athletics-field.jpg', '/schoolbus.jpeg', '/our-story-poster.jpg'] as const;
 
 const BRANCHES: Record<string, BranchInfo> = {
   'shivalayam-street': {
@@ -835,37 +950,68 @@ const BRANCHES: Record<string, BranchInfo> = {
     streetName: 'Shivalayam Street',
     fullAddress: 'Shivalayam Street, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
     description: 'Our flagship branch on Shivalayam Street brings CBSE-aligned education from Pre-School through High-School to the heart of Pulivendla, with experienced faculty and a nurturing environment.',
-    mapQuery: 'Shivalayam+Street+Pulivendla+Kadapa+Andhra+Pradesh',
-    mapLabel: 'Shivalayam Street Branch',
-    busStopName: 'Sivalayam Street',
+    about: [
+      'Set in the heart of Pulivendla, the Shivalayam Street campus is where the school began, and it still sets the pace for the branches that followed. Classes run the whole way from Pre-School to High-School, so a child who joins us at three can sit their board exams without ever having to change schools.',
+      'Teaching follows the CBSE-aligned LEAD curriculum, with smart classrooms and activity-based lessons that turn a concept into something a child has actually done rather than only read about. From the middle years, foundation coaching for IIT-JEE and NEET runs alongside board preparation, and assessments through the year mean a gap is closed when it appears rather than discovered the week before an exam.',
+    ],
+    quote: 'The power of concentration is the only key to the treasure-house of knowledge.',
+    gallery: BRANCH_PHOTOS,
   },
   'brahmanapalli-road': {
     title: 'Brahmanapalli Road Branch',
     streetName: 'Brahmanapalli Road',
     fullAddress: 'Brahmanapalli Road, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
     description: 'The Brahmanapalli Road branch offers a calm and focused learning environment, serving families across the Brahmanapalli area with dedicated teachers and holistic education.',
-    mapQuery: 'Brahmanapalli+Road+Pulivendla+Kadapa+Andhra+Pradesh',
-    mapLabel: 'Brahmanapalli Road Branch',
-    busStopName: 'Brahmanapalle Road',
+    about: [
+      'The Brahmanapalli Road campus opened to bring the same standard of teaching within reach of families on that side of Pulivendla, and it has kept the unhurried feel of a school where everyone knows everyone. Teachers stay with a class long enough to know each child by name and by temperament — who needs drawing out, who needs slowing down, and who has quietly stopped following.',
+      'The curriculum, the smart classrooms, the assessment pattern and the IIT-JEE and NEET foundation work are the same as at every branch of the society, so a family moving between our campuses finds their child picking up exactly where they left off. Progress is shared with parents honestly and early, not saved up for a report at the end of the year.',
+    ],
+    quote: 'To me the very essence of education is concentration of mind, not the collecting of facts.',
+    gallery: [...BRANCH_PHOTOS.slice(2), ...BRANCH_PHOTOS.slice(0, 2)],
   },
   'parnapalli-road': {
     title: 'Parnapalli Road Branch',
     streetName: 'Parnapalli Road',
     fullAddress: 'Parnapalli Road, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
     description: 'The Parnapalli Road branch extends our mission of inspiring growth to the Parnapalli area, offering the same high standards of CBSE education and character development.',
-    mapQuery: 'Parnapalli+Road+Pulivendla+Kadapa+Andhra+Pradesh',
-    mapLabel: 'Parnapalli Road Branch',
-    busStopName: 'Nagarigutta',
+    about: [
+      'The Parnapalli Road campus carries our work out to the Parnapalli side of town, so that a good school is a short journey rather than a long one for the families living there. The building was laid out for the way children actually learn: room to move between activities, space for reading and for making things, and classrooms fitted with the same digital boards and audio-visual tools used across the society.',
+      'Lessons follow the CBSE-aligned LEAD curriculum from Pre-School through High-School, with early foundation coaching for IIT-JEE and NEET for students who want it. Character is taught as deliberately as the subjects are — punctuality, honesty, looking after younger children and finishing what you start are expected here every day.',
+    ],
+    quote: 'Education is not the amount of information that is put into your brain and runs riot there, undigested, all your life.',
+    gallery: [...BRANCH_PHOTOS.slice(4), ...BRANCH_PHOTOS.slice(0, 4)],
   },
 };
 
 function BranchPage({ params }: { params: { slug: string } }) {
   const info = BRANCHES[params.slug];
   if (!info) return <NotFound />;
-  return <BranchPageTemplate branch={info} />;
+  return <BranchPageTemplate branch={info} branchOffset={Object.keys(BRANCHES).indexOf(params.slug)} />;
 }
 
-function Router() { return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/faculty" component={FacultyPage} /><Route path="/bus-routes" component={BusRoutesPage} /><Route path="/branch/:slug" component={BranchPage} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>; }
+/* A second of crest on white before each page — on first arrival and again on
+   every route change, which is what the header links are. Keyed on the
+   location so the timer restarts per navigation; the fade lives in the
+   animation and finishes exactly as the element is unmounted. */
+function LoadingSplash() {
+  const [location] = useLocation();
+  const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    setVisible(true);
+    const timer = window.setTimeout(() => setVisible(false), 1000);
+    return () => window.clearTimeout(timer);
+  }, [location]);
+  if (!visible) return null;
+  return <div className="loading-splash fixed inset-0 z-[100] grid place-items-center bg-white" role="status" aria-live="polite" data-testid="loading-splash">
+    <span className="relative block h-[124px] w-[124px] overflow-hidden rounded-full shadow-[0_10px_30px_rgba(31,40,56,.14)] sm:h-[156px] sm:w-[156px]">
+      <img src="/logo.jpeg" alt="" className="h-full w-full object-cover" />
+      <span className="logo-shimmer logo-shimmer-loop" aria-hidden="true" />
+    </span>
+    <span className="sr-only">Loading</span>
+  </div>;
+}
+
+function Router() { return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/gallery" component={GalleryPage} /><Route path="/bus-routes" component={BusRoutesPage} /><Route path="/branch/:slug" component={BranchPage} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>; }
 function RoutedErrorBoundary({ children }: { children: ReactNode }) { const [location] = useLocation(); return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>; }
-function App() { return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>; }
+function App() { return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><LoadingSplash /><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>; }
 export default App;
