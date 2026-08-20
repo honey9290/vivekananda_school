@@ -158,9 +158,17 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
      further down the file, so a top-level derivation would run too early. */
   const branchLinks = Object.entries(BRANCHES);
   const onBranch = location.startsWith('/branch/');
-  /* Those two are home-page sections; from a branch the links would only
-     bounce you back to the group site, so they are not offered there. */
-  const items = onBranch ? headerNavItems.filter(([, href]) => href !== '#results' && href !== '#media') : headerNavItems;
+  /* Results and Facilities are home-page sections; from a branch the links
+     would only bounce you back to the group site, so they are dropped there
+     in favour of Faculty, which is a section that exists on branch pages and
+     nowhere else. */
+  const items: readonly (readonly [string, string])[] = onBranch
+    ? headerNavItems.flatMap(([label, href]) => {
+        if (href === '#results' || href === '#media') return [];
+        if (href === '#about') return [[label, href], ['Faculty', '#faculty']];
+        return [[label, href]];
+      })
+    : headerNavItems;
   const currentBranch = onBranch ? BRANCHES[location.slice('/branch/'.length)] : undefined;
   const go = (href: string) => {
     setOpen(false);
@@ -585,28 +593,28 @@ const FACULTY: { name: string; rank: string; subject: string; years: string; tin
    order — each page leads with a different teacher and icon. */
 function Faculty({ heading = true, branchOffset = 0 }: { heading?: boolean; branchOffset?: number }) {
   const roster = [...FACULTY.slice(branchOffset % FACULTY.length), ...FACULTY.slice(0, branchOffset % FACULTY.length)];
-  return <section id="faculty" className="py-8 md:py-12"><div className="container-wide">
-    <div className="mb-8 text-center">
+  return <section id="faculty" className="py-12 md:py-16"><div className="container-wide">
+    <div className="mb-10 text-center">
       {heading && <>
-        <h2 className="section-heading text-[clamp(1.6rem,2.8vw,2.2rem)]"><em>Faculty</em></h2>
+        <h2 className="section-heading text-[clamp(1.9rem,3.4vw,2.7rem)]"><em>Faculty</em></h2>
         <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
       </>}
-      <p className="mt-3 text-[15px] text-[#3F5771]">Dedicated teachers across all subjects, guiding every student with care and expertise.</p>
+      <p className="mt-3 text-[17px] text-[#3F5771]">Dedicated teachers across all subjects, guiding every student with care and expertise.</p>
     </div>
     {/* One row of six once there is room for it; just the portrait circle
         and the words beneath it, no card around them. */}
-    <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
-      {roster.map((member, index) => <article key={member.name} className="reveal flex flex-col items-center gap-3 text-center" data-testid={`card-faculty-${index + 1}`}>
-        <span className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-full ring-4 ring-white shadow-[0_4px_14px_rgba(31,40,56,.12)]" style={{ backgroundColor: `${member.accent}1F`, color: member.accent }}>
+    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
+      {roster.map((member, index) => <article key={member.name} className="reveal flex flex-col items-center gap-4 text-center" data-testid={`card-faculty-${index + 1}`}>
+        <span className="grid h-28 w-28 shrink-0 place-items-center overflow-hidden rounded-full ring-4 ring-white shadow-[0_4px_14px_rgba(31,40,56,.12)]" style={{ backgroundColor: `${member.accent}1F`, color: member.accent }}>
           {member.photo
             ? <img src={member.photo} alt="" className="h-full w-full object-cover" loading="lazy" />
-            : <member.icon size={30} strokeWidth={1.75} />}
+            : <member.icon size={42} strokeWidth={1.75} />}
         </span>
         <div>
-          <h3 className="text-[15px] font-bold leading-tight" style={{ color: member.accent }}>{member.name}</h3>
-          <p className="mt-1.5 text-[13px] leading-5 text-black/70">{member.rank}</p>
-          <p className="text-[13px] leading-5 text-black/70">{member.subject}</p>
-          <p className="text-[13px] leading-5 text-black/70">Experience: {member.years}</p>
+          <h3 className="text-[17px] font-bold leading-tight" style={{ color: member.accent }}>{member.name}</h3>
+          <p className="mt-2 text-[14px] leading-6 text-black/70">{member.rank}</p>
+          <p className="text-[14px] leading-6 text-black/70">{member.subject}</p>
+          <p className="text-[14px] leading-6 text-black/70">Experience: {member.years}</p>
         </div>
       </article>)}
     </div>
