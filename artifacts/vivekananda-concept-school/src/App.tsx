@@ -41,7 +41,7 @@ const FLOAT_VARIANTS = ['wallpaper-icon-float-a', 'wallpaper-icon-float-b', 'wal
 function WallpaperTile() {
   return <div className="relative mx-auto w-full" style={{ aspectRatio: `${WALLPAPER_TILE.width} / ${WALLPAPER_TILE.height}` }}>
     {ALL_TILE_ICONS.map((icon, index) => <div key={`${icon.file}-${icon.leftPct}-${icon.topPct}`} className="wallpaper-icon-depth absolute" style={{ left: `${icon.leftPct}%`, top: `${icon.topPct}%`, width: `${icon.widthPct}%` }}>
-      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full opacity-40 ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
+      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full opacity-50 ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
     </div>)}
   </div>;
 }
@@ -360,7 +360,7 @@ function Hero({ place = 'PULIVENDLA', eyebrow = 'WELCOME TO OUR SCHOOL', heading
   return <section id="top" className="overflow-hidden bg-white">
     <Title className="sr-only">{`Sree Vivekananda Educational Society — ${place}`}</Title>
     {/* Height tracks the banners' own 1600×415 ratio, capped at 600px. */}
-    <div className="hero-track flex aspect-[1600/415] max-h-[600px]" style={{ '--slide-count': slideCount } as CSSProperties}>
+    <div className="hero-track flex aspect-[1600/415] max-h-[540px]" style={{ '--slide-count': slideCount } as CSSProperties}>
       {[0, 1].map((copy) => <Fragment key={copy}>
         {HERO_PHOTOS.map((photo) => <div key={`${copy}-${photo.src}`} className="hero-slide shrink-0" aria-hidden={copy === 1 || undefined}>
           <HeroPhoto photo={photo} />
@@ -435,18 +435,17 @@ const resultImages = [
    Toppers — that's noticeably more square than the 4:3 box, so cropping it
    to cover would cut its bottom row of names off; the others fit closely
    enough that `cover` reads as a clean fill. */
-function ResultCard({ src, alt, caption, colour, contain = false }: { src: string; alt: string; caption: string; colour: string; contain?: boolean }) {
+function ResultCard({ src, alt, caption, contain = false }: { src: string; alt: string; caption: string; contain?: boolean }) {
   return <figure className="flex flex-col items-center gap-4">
     <button type="button" onClick={() => window.open(src, '_blank')} className="group block aspect-[4/3] w-full overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_10px_30px_rgba(31,40,56,.16)] ring-1 ring-[#1C2A37]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid="button-result-card">
       <img src={src} alt={alt} className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${contain ? 'object-contain' : 'object-cover object-top'}`} loading="lazy" />
     </button>
-    <span className="h-4 w-4 rounded-full" style={{ backgroundColor: colour }} aria-hidden="true" />
     <figcaption className="max-w-[260px] text-center text-[15px] font-semibold leading-6 text-[#0F4C5C] sm:text-[16px]">{caption}</figcaption>
   </figure>;
 }
 
 function Results() {
-  return <section id="results" className="relative py-6 md:py-9"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[1200px] grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-3">{resultImages.map((item, index) => <div key={item.src} className="reveal" data-testid={`card-result-${index + 1}`}><ResultCard src={item.src} alt={item.caption} caption={item.caption} colour={ORB_COLOURS[index % ORB_COLOURS.length]} contain={item.contain} /></div>)}</div></div></section>;
+  return <section id="results" className="relative py-6 md:py-9"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[1200px] grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-3">{resultImages.map((item, index) => <div key={item.src} className="reveal" data-testid={`card-result-${index + 1}`}><ResultCard src={item.src} alt={item.caption} caption={item.caption} contain={item.contain} /></div>)}</div></div></section>;
 }
 
 /* Each card shows either a line icon or a photograph in the same dashed circle,
@@ -562,7 +561,6 @@ function GalleryOrb({ src, alt, colour, spin, caption, contain = false }: { src:
       </span>
       <OrbRing colour={colour} spin={spin} />
     </button>
-    <span className="h-4 w-4 rounded-full" style={{ backgroundColor: colour }} aria-hidden="true" />
     {caption && <figcaption className="max-w-[260px] text-center text-[15px] font-semibold leading-6 text-[#0F4C5C] sm:text-[16px]">{caption}</figcaption>}
   </figure>;
 }
@@ -593,28 +591,28 @@ const FACULTY: { name: string; rank: string; subject: string; years: string; tin
    order — each page leads with a different teacher and icon. */
 function Faculty({ heading = true, branchOffset = 0 }: { heading?: boolean; branchOffset?: number }) {
   const roster = [...FACULTY.slice(branchOffset % FACULTY.length), ...FACULTY.slice(0, branchOffset % FACULTY.length)];
-  return <section id="faculty" className="py-12 md:py-16"><div className="container-wide">
-    <div className="mb-10 text-center">
+  return <section id="faculty" className="py-16 md:py-24"><div className="container-wide">
+    <div className="mb-14 text-center">
       {heading && <>
-        <h2 className="section-heading text-[clamp(1.9rem,3.4vw,2.7rem)]"><em>Faculty</em></h2>
-        <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
+        <h2 className="section-heading text-[clamp(2.4rem,4.4vw,3.6rem)]"><em>Faculty</em></h2>
+        <div className="ornament mt-3"><span className="ornament-mark">◆</span></div>
       </>}
-      <p className="mt-3 text-[17px] text-[#3F5771]">Dedicated teachers across all subjects, guiding every student with care and expertise.</p>
+      <p className="mt-4 text-[19px] text-[#3F5771]">Dedicated teachers across all subjects, guiding every student with care and expertise.</p>
     </div>
     {/* One row of six once there is room for it; just the portrait circle
         and the words beneath it, no card around them. */}
-    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
-      {roster.map((member, index) => <article key={member.name} className="reveal flex flex-col items-center gap-4 text-center" data-testid={`card-faculty-${index + 1}`}>
-        <span className="grid h-28 w-28 shrink-0 place-items-center overflow-hidden rounded-full ring-4 ring-white shadow-[0_4px_14px_rgba(31,40,56,.12)]" style={{ backgroundColor: `${member.accent}1F`, color: member.accent }}>
+    <div className="grid grid-cols-2 gap-x-8 gap-y-14 sm:grid-cols-3 lg:grid-cols-6">
+      {roster.map((member, index) => <article key={member.name} className="reveal flex flex-col items-center gap-5 text-center" data-testid={`card-faculty-${index + 1}`}>
+        <span className="grid h-40 w-40 shrink-0 place-items-center overflow-hidden rounded-full ring-[6px] ring-white shadow-[0_6px_20px_rgba(31,40,56,.16)]" style={{ backgroundColor: `${member.accent}1F`, color: member.accent }}>
           {member.photo
             ? <img src={member.photo} alt="" className="h-full w-full object-cover" loading="lazy" />
-            : <member.icon size={42} strokeWidth={1.75} />}
+            : <member.icon size={58} strokeWidth={1.6} />}
         </span>
         <div>
-          <h3 className="text-[17px] font-bold leading-tight" style={{ color: member.accent }}>{member.name}</h3>
-          <p className="mt-2 text-[14px] leading-6 text-black/70">{member.rank}</p>
-          <p className="text-[14px] leading-6 text-black/70">{member.subject}</p>
-          <p className="text-[14px] leading-6 text-black/70">Experience: {member.years}</p>
+          <h3 className="text-[20px] font-bold leading-tight" style={{ color: member.accent }}>{member.name}</h3>
+          <p className="mt-2.5 text-[16px] leading-7 text-black/70">{member.rank}</p>
+          <p className="text-[16px] leading-7 text-black/70">{member.subject}</p>
+          <p className="text-[16px] leading-7 text-black/70">Experience: {member.years}</p>
         </div>
       </article>)}
     </div>
