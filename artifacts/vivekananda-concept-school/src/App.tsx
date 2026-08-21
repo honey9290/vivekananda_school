@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, BookMarked, BookOpen, BookText, Bus, Calculator, Check, ChevronDown, ChevronRight, FlaskConical, Globe2, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, Bus, Check, ChevronDown, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -158,17 +158,9 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
      further down the file, so a top-level derivation would run too early. */
   const branchLinks = Object.entries(BRANCHES);
   const onBranch = location.startsWith('/branch/');
-  /* Results and Facilities are home-page sections; from a branch the links
-     would only bounce you back to the group site, so they are dropped there
-     in favour of Faculty, which is a section that exists on branch pages and
-     nowhere else. */
-  const items: readonly (readonly [string, string])[] = onBranch
-    ? headerNavItems.flatMap(([label, href]) => {
-        if (href === '#results' || href === '#media') return [];
-        if (href === '#about') return [[label, href], ['Faculty', '#faculty']];
-        return [[label, href]];
-      })
-    : headerNavItems;
+  /* Those two are home-page sections; from a branch the links would only
+     bounce you back to the group site, so they are not offered there. */
+  const items = onBranch ? headerNavItems.filter(([, href]) => href !== '#results' && href !== '#media') : headerNavItems;
   const currentBranch = onBranch ? BRANCHES[location.slice('/branch/'.length)] : undefined;
   const go = (href: string) => {
     setOpen(false);
@@ -571,54 +563,6 @@ function GalleryOrbs({ images, label, className = 'grid-cols-2 md:grid-cols-3' }
   </div>;
 }
 
-/* Placeholder roster - the layout is the point; swap the names, the years and
-   the portraits for the real staff list. `photo` is optional and the card
-   falls back to the teacher's initials, so a missing headshot never leaves a
-   hole in the grid. */
-const FACULTY: { name: string; rank: string; subject: string; years: string; tint: string; accent: string; icon: typeof BookText; photo?: string }[] = [
-  { name: 'Smt. Anusha R.', rank: 'Senior Lecturer', subject: 'Telugu', years: '12+ yrs', tint: '#EDF7EE', accent: '#2E7D32', icon: BookText },
-  { name: 'Ms. Kavya M.', rank: 'Lecturer', subject: 'Hindi', years: '8+ yrs', tint: '#FFF4EA', accent: '#E65100', icon: BookMarked },
-  { name: 'Mr. Ramesh K.', rank: 'Lecturer', subject: 'English', years: '6+ yrs', tint: '#ECF3FC', accent: '#1565C0', icon: BookOpen },
-  { name: 'Smt. Deepa T.', rank: 'Junior Lecturer', subject: 'Mathematics', years: '3+ yrs', tint: '#F6EEFA', accent: '#6A1B9A', icon: Calculator },
-  { name: 'Mr. Suresh P.', rank: 'Lecturer', subject: 'Science', years: '5+ yrs', tint: '#E8F6F4', accent: '#00695C', icon: FlaskConical },
-  { name: 'Ms. Lakshmi V.', rank: 'Lecturer', subject: 'Social Studies', years: '4+ yrs', tint: '#FDEEEB', accent: '#BF360C', icon: Globe2 },
-];
-
-/* `heading` off when the page above already carries the title as its `h1` -
-   otherwise the section repeats it and the page has two competing headings.
-   `branchOffset` rotates the starting member so the three branch pages,
-   which otherwise share this exact roster, don't all show it in the same
-   order — each page leads with a different teacher and icon. */
-function Faculty({ heading = true, branchOffset = 0 }: { heading?: boolean; branchOffset?: number }) {
-  const roster = [...FACULTY.slice(branchOffset % FACULTY.length), ...FACULTY.slice(0, branchOffset % FACULTY.length)];
-  return <section id="faculty" className="py-16 md:py-24"><div className="container-wide">
-    <div className="mb-14 text-center">
-      {heading && <>
-        <h2 className="section-heading text-[clamp(2.4rem,4.4vw,3.6rem)]"><em>Faculty</em></h2>
-        <div className="ornament mt-3"><span className="ornament-mark">◆</span></div>
-      </>}
-      <p className="mt-4 text-[19px] text-[#3F5771]">Dedicated teachers across all subjects, guiding every student with care and expertise.</p>
-    </div>
-    {/* One row of six once there is room for it; just the portrait circle
-        and the words beneath it, no card around them. */}
-    <div className="grid grid-cols-2 gap-x-8 gap-y-14 sm:grid-cols-3 lg:grid-cols-6">
-      {roster.map((member, index) => <article key={member.name} className="reveal flex flex-col items-center gap-5 text-center" data-testid={`card-faculty-${index + 1}`}>
-        <span className="grid h-40 w-40 shrink-0 place-items-center overflow-hidden rounded-full ring-[6px] ring-white shadow-[0_6px_20px_rgba(31,40,56,.16)]" style={{ backgroundColor: `${member.accent}1F`, color: member.accent }}>
-          {member.photo
-            ? <img src={member.photo} alt="" className="h-full w-full object-cover" loading="lazy" />
-            : <member.icon size={58} strokeWidth={1.6} />}
-        </span>
-        <div>
-          <h3 className="text-[20px] font-bold leading-tight" style={{ color: member.accent }}>{member.name}</h3>
-          <p className="mt-2.5 text-[16px] leading-7 text-black/70">{member.rank}</p>
-          <p className="text-[16px] leading-7 text-black/70">{member.subject}</p>
-          <p className="text-[16px] leading-7 text-black/70">Experience: {member.years}</p>
-        </div>
-      </article>)}
-    </div>
-  </div></section>;
-}
-
 function StoryVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
@@ -875,9 +819,7 @@ function GalleryPage() {
 
 function Home() {
   return <PageShell title="Vivekananda Concept School | Pulivendla" description="Vivekananda Concept School in Pulivendla offers thoughtful education from Pre-School through High-School." admissionsPopup>
-    {/* Faculty lives on /faculty now, reached from the header. */}
-    {/* Gallery has a page of its own now — the header link goes there. */}
-    {(onEnquire) => <><Hero /><Intro /><Results /><Facilities /><Testimonials /><Admissions onEnquire={onEnquire} /></>}
+    {(onEnquire) => <><Hero /><Intro /><Results /><Facilities /><Gallery /><Testimonials /><Admissions onEnquire={onEnquire} /></>}
   </PageShell>;
 }
 
@@ -901,7 +843,7 @@ function BranchGallery({ streetName, images }: { streetName: string; images: rea
   );
 }
 
-function BranchPageTemplate({ branch, branchOffset = 0 }: { branch: BranchInfo; branchOffset?: number }) {
+function BranchPageTemplate({ branch }: { branch: BranchInfo }) {
   return (
     <PageShell
       title={`${branch.streetName} Branch | Sree Vivekananda Educational Society`}
@@ -938,7 +880,6 @@ function BranchPageTemplate({ branch, branchOffset = 0 }: { branch: BranchInfo; 
             </div>
           </div>
         </section>
-        <Faculty branchOffset={branchOffset} />
         <BranchGallery streetName={branch.streetName} images={branch.gallery} />
         <Admissions onEnquire={onEnquire} />
       </>}
@@ -992,7 +933,7 @@ const BRANCHES: Record<string, BranchInfo> = {
 function BranchPage({ params }: { params: { slug: string } }) {
   const info = BRANCHES[params.slug];
   if (!info) return <NotFound />;
-  return <BranchPageTemplate branch={info} branchOffset={Object.keys(BRANCHES).indexOf(params.slug)} />;
+  return <BranchPageTemplate branch={info} />;
 }
 
 /* A second of crest on white before each page — on first arrival and again on
