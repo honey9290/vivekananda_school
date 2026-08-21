@@ -112,7 +112,7 @@
 .ornament-mark { font-size: 18px; line-height: 1; transform: rotate(180deg); }
 .hero-pattern { background-color: #1F2838; background-image: linear-gradient(135deg, transparent 0 46%, rgba(15,76,92,.35) 46% 47%, transparent 47% 100%), repeating-linear-gradient(35deg, transparent 0 40px, rgba(255,255,255,.035) 40px 42px); }
 .footer-texture { background-color: #1F2838; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 6px 6px; }
-.orb-ring-spin { animation: orb-ring-spin 14s linear infinite; transform-origin: 50% 50%; }
+.orb-ring-spin { animation: orb-ring-spin 26s linear infinite; transform-origin: 50% 50%; }
 .orb-ring-spin-reverse { animation-direction: reverse; }
 @keyframes orb-ring-spin { to { transform: rotate(1turn); } }
 @media (prefers-reduced-motion: reduce) { .orb-ring-spin { animation: none; } }
@@ -171,15 +171,8 @@
 @keyframes doodle-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .doodle-float, .doodle-drift, .doodle-spin { animation: none; } }
 
-/* ---------------------------------------------------- scrolling hero band */
-/* The band is `--slide-count` slides wide showing `--per-view` of them, so a
-   slide is always one clean column of the section however many are in the
-   run. It slides right by half its width — one full run — which lands the
-   duplicate exactly where the original was, and the loop closes invisibly.
-   Linear, and slow: easing would give the circle a visible heartbeat. */
-.hero-track { --per-view: 1; width: calc(var(--slide-count) / var(--per-view) * 100%); animation: hero-track 48s linear infinite; }
-.hero-slide { width: calc(100% / var(--slide-count)); }
-@keyframes hero-track { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-@media (prefers-reduced-motion: reduce) { .hero-track { animation: none; transform: translateX(-50%); } }
+/* The hero banner is a discrete slideshow driven from React state (see
+   `Hero` in App.tsx) — it steps between slides on a timer with a CSS
+   transition, so there's no dedicated marquee animation here. */
 
 @media (max-width: 640px) { .container-wide { width: min(100% - 28px, 1180px); } .container-hero { width: min(100% - 28px, 1400px); } .ornament { width: 180px; } }

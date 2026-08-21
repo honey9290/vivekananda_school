@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ArrowRight, Bus, Check, ChevronDown, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -7,42 +7,69 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 const WALLPAPER_TILE = { width: 897, height: 1753 };
+/* Earth, sun, cup, star, rocket, laptop, books, cricket, lion, football
+   (physical-education) and painting (paint-palette) are pinned to specific
+   spots next to About Us / Results / Facilities / Gallery / Testimonials
+   content instead (see `PinnedIcon` and where it's used below) — dropped
+   from this generic repeating set so they don't also turn up scattered at
+   random elsewhere on the page. Rainbow, sleeping (moon) and
+   carrot/pineapple were dropped outright rather than pinned. Only one of
+   the two apples survives here too. */
 const WALLPAPER_ICONS = [
   { file: 'apple-svgrepo-com.svg', leftPct: 1.2, topPct: 3, widthPct: 6 },
-  { file: 'books-svgrepo-com.svg', leftPct: 92.6, topPct: 7, widthPct: 6 },
-  { file: 'cricket-svgrepo-com.svg', leftPct: 2.2, topPct: 12, widthPct: 6.4 },
-  { file: 'cup-svgrepo-com.svg', leftPct: 93.4, topPct: 17, widthPct: 5.6 },
   { file: 'educate-svgrepo-com.svg', leftPct: 1, topPct: 22, widthPct: 5.6 },
-  { file: 'earth-svgrepo-com.svg', leftPct: 92.8, topPct: 27, widthPct: 6 },
   { file: 'giraffe-svgrepo-com.svg', leftPct: 2.4, topPct: 32, widthPct: 6.8 },
-  { file: 'laptop-svgrepo-com.svg', leftPct: 93, topPct: 37, widthPct: 6 },
-  { file: 'lion-svgrepo-com.svg', leftPct: 1.1, topPct: 42, widthPct: 6 },
-  { file: 'paint-palette-palette-svgrepo-com.svg', leftPct: 92.7, topPct: 47, widthPct: 6 },
-  { file: 'physical-education-svgrepo-com.svg', leftPct: 2, topPct: 52, widthPct: 5.6 },
-  { file: 'rainbow-svgrepo-com.svg', leftPct: 92.4, topPct: 57, widthPct: 6.8 },
-  { file: 'rocket-svgrepo-com.svg', leftPct: 1.3, topPct: 62, widthPct: 6 },
-  { file: 'sleeping-svgrepo-com.svg', leftPct: 93.2, topPct: 67, widthPct: 5.6 },
-  { file: 'star-svgrepo-com.svg', leftPct: 1.9, topPct: 72, widthPct: 5.6 },
-  { file: 'sun-svgrepo-com.svg', leftPct: 92.9, topPct: 77, widthPct: 6 },
   { file: 'elephant-svgrepo-com.svg', leftPct: 1, topPct: 82, widthPct: 6.8 },
-  { file: 'carrot-svgrepo-com.svg', leftPct: 93.3, topPct: 86, widthPct: 5.6 },
-  { file: 'pineapple-svgrepo-com.svg', leftPct: 2.1, topPct: 90, widthPct: 5.6 },
-  { file: 'bulb-svgrepo-com.svg', leftPct: 92.8, topPct: 94, widthPct: 6 },
-  { file: 'apple-svgrepo-com.svg', leftPct: 1.5, topPct: 97, widthPct: 5.6 },
-  { file: 'books-svgrepo-com.svg', leftPct: 92.5, topPct: 99, widthPct: 6 },
+  { file: 'bulb-svgrepo-com.svg', leftPct: 92.8, topPct: 95, widthPct: 6 },
 ] as const;
 
-/* The wallpaper is margin decoration: every icon sits in one of the two
-   narrow gutters so nothing ever drifts across the column of reading. */
 const ALL_TILE_ICONS = WALLPAPER_ICONS;
 
 const FLOAT_VARIANTS = ['wallpaper-icon-float-a', 'wallpaper-icon-float-b', 'wallpaper-icon-float-c'];
 
+/* Scattered across the full width now rather than pinned to the two edge
+   gutters — each icon's base spot is just a seed that gets thrown anywhere
+   across a wide band on each side rather than pinned to one exact spot, so
+   the sixteen repeats of this tile don't line up into hairline columns —
+   but still kept out of the centre band where the reading content sits
+   (Facilities, cards, etc.), so icons never land on top of text. `Math.random`
+   is fine here: the tile isn't re-rendered after it mounts, so the scatter
+   doesn't reshuffle under the reader. */
 function WallpaperTile() {
   return <div className="relative mx-auto w-full" style={{ aspectRatio: `${WALLPAPER_TILE.width} / ${WALLPAPER_TILE.height}` }}>
-    {ALL_TILE_ICONS.map((icon, index) => <div key={`${icon.file}-${icon.leftPct}-${icon.topPct}`} className="wallpaper-icon-depth absolute" style={{ left: `${icon.leftPct}%`, top: `${icon.topPct}%`, width: `${icon.widthPct}%` }}>
-      <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full opacity-50 ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
-    </div>)}
+    {ALL_TILE_ICONS.map((icon, index) => {
+      const onLeft = icon.leftPct < 50;
+      const left = onLeft ? Math.random() * 14 : 86 + Math.random() * 14;
+      const top = Math.max(0, Math.min(99, icon.topPct + (Math.random() * 10 - 5)));
+      const width = icon.widthPct * 0.92;
+      return <div key={`${icon.file}-${index}`} className="wallpaper-icon-depth absolute" style={{ left: `${left}%`, top: `${top}%`, width: `${width}%` }}>
+        <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full opacity-65 ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
+      </div>;
+    })}
+  </div>;
+}
+
+/* A single decorative icon, deliberately placed (via `className`) next to a
+   specific piece of content, rather than one of the randomly-scattered
+   wallpaper icons. Needs a `relative` ancestor to position against.
+
+   Split into an outer/inner pair exactly like `WallpaperTile`'s icons:
+   `wallpaper-icon-depth` (outer) is the cursor-repel effect driven by
+   `WallpaperLayer`'s mousemove listener, which sets `transform` via the
+   `--repel-x`/`--repel-y` custom properties; `wallpaper-icon-float-a`
+   (inner) is the floating-bob *animation*, which also drives `transform`.
+   Putting both on the same element would have the animation clobber the
+   repel offset every frame, so each gets its own element. The
+   `className`/`style` props (position, centering margins) go on the outer
+   element since that's the one being positioned/repelled; the inner `img`
+   just fills it. The `.wallpaper-icon-float-a` class only names the
+   keyframes — it never sets a duration — so it needs one set inline or the
+   animation runs in 0s and the icon just sits still, exactly like
+   `WallpaperTile` already does per icon. Randomised per mount (each pin
+   only mounts once) so nearby icons don't bob in lockstep. */
+function PinnedIcon({ file, className, widthRem = 3.5, style }: { file: string; className: string; widthRem?: number; style?: CSSProperties }) {
+  return <div className={`wallpaper-icon-depth pointer-events-none absolute ${className}`} style={{ width: `${widthRem}rem`, ...style }}>
+    <img src={`/wallpaper-icons/${file}`} alt="" aria-hidden="true" className="wallpaper-icon-float-a block w-full opacity-65" style={{ animationDuration: `${(14 + Math.random() * 10).toFixed(2)}s`, animationDelay: `${(Math.random() * 6).toFixed(2)}s` }} />
   </div>;
 }
 
@@ -54,9 +81,14 @@ function WallpaperLayer() {
     const REPEL_RADIUS = 130;
     const REPEL_STRENGTH = 42;
     let measureQueued = false;
+    /* `document`, not `container` — `PinnedIcon`s render inside their own
+       sections (About Us, Results, Facilities, ...), not inside this layer,
+       so scoping the scan to `container` would miss every one of them and
+       only the randomly-scattered tile icons would ever repel from the
+       cursor. */
     const measure = () => {
       measureQueued = false;
-      iconsRef.current = Array.from(container.querySelectorAll<HTMLDivElement>('.wallpaper-icon-depth')).map((el) => {
+      iconsRef.current = Array.from(document.querySelectorAll<HTMLDivElement>('.wallpaper-icon-depth')).map((el) => {
         const r = el.getBoundingClientRect();
         return { el, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
       });
@@ -348,16 +380,21 @@ function Hero({ place = 'PULIVENDLA', eyebrow = 'WELCOME TO OUR SCHOOL', heading
   /* The blue brand slide is gone from the scroller, but a branch page still
      needs its own `h1` — kept off-screen rather than dropped outright. */
   const Title = headingLevel;
-  const slideCount = HERO_PHOTOS.length * 2;
+  /* Every banner stays fully in view, then crossfades into the next one
+     every 3 seconds — a fade rather than a slide, so nothing ever looks
+     caught mid-transition. */
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const timer = window.setInterval(() => setIndex((current) => (current + 1) % HERO_PHOTOS.length), 3000);
+    return () => window.clearInterval(timer);
+  }, []);
   return <section id="top" className="overflow-hidden bg-white">
     <Title className="sr-only">{`Sree Vivekananda Educational Society — ${place}`}</Title>
-    {/* Height tracks the banners' own 1600×415 ratio, capped at 600px. */}
-    <div className="hero-track flex aspect-[1600/415] max-h-[540px]" style={{ '--slide-count': slideCount } as CSSProperties}>
-      {[0, 1].map((copy) => <Fragment key={copy}>
-        {HERO_PHOTOS.map((photo) => <div key={`${copy}-${photo.src}`} className="hero-slide shrink-0" aria-hidden={copy === 1 || undefined}>
-          <HeroPhoto photo={photo} />
-        </div>)}
-      </Fragment>)}
+    {/* Height tracks a 1600×470 ratio, capped at 620px. */}
+    <div className="relative aspect-[1600/530] max-h-[620px]">
+      {HERO_PHOTOS.map((photo, i) => <div key={photo.src} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${i === index ? 'opacity-100' : 'opacity-0'}`} aria-hidden={i !== index || undefined}>
+        <HeroPhoto photo={photo} />
+      </div>)}
     </div>
   </section>;
 }
@@ -367,7 +404,10 @@ function Heading({ title, accent }: { title?: string; accent?: string }) {
 }
 
 function Intro() {
-  return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" /><div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
+  return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" />
+    <PinnedIcon file="sun-svgrepo-com.svg" className="right-3 top-2 md:right-5 md:top-3" widthRem={4} />
+    <PinnedIcon file="earth-svgrepo-com.svg" className="right-1 top-[24%] md:right-3" widthRem={4.5} />
+    <div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
     <div className="reveal"><p className="max-w-[470px] text-[17px] leading-6 text-black"><span className="font-extrabold uppercase">I</span>gniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
     <div className="reveal relative mx-auto aspect-[1254/1030] w-full max-w-[460px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/vivekananda.png" alt="Educate and raise the masses, and thus alone a nation is possible — Swami Vivekananda" className="h-full w-full rounded-2xl object-cover" data-testid="img-about" /></div>
   </div>
@@ -437,7 +477,11 @@ function ResultCard({ src, alt, caption, contain = false }: { src: string; alt: 
 }
 
 function Results() {
-  return <section id="results" className="relative py-6 md:py-9"><div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[1200px] grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-3">{resultImages.map((item, index) => <div key={item.src} className="reveal" data-testid={`card-result-${index + 1}`}><ResultCard src={item.src} alt={item.caption} caption={item.caption} contain={item.contain} /></div>)}</div></div></section>;
+  return <section id="results" className="relative py-6 md:py-9">
+    <PinnedIcon file="cup-svgrepo-com.svg" className="right-1 top-[42%] md:right-3" widthRem={4.5} />
+    <PinnedIcon file="star-svgrepo-com.svg" className="left-1 top-[36%] md:left-3" widthRem={4} />
+    <PinnedIcon file="rocket-svgrepo-com.svg" className="left-1 top-[50%] md:left-3" widthRem={4.5} />
+    <div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[1200px] grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-3">{resultImages.map((item, index) => <div key={item.src} className="reveal" data-testid={`card-result-${index + 1}`}><ResultCard src={item.src} alt={item.caption} caption={item.caption} contain={item.contain} /></div>)}</div></div></section>;
 }
 
 /* Each card shows either a line icon or a photograph in the same dashed circle,
@@ -502,19 +546,50 @@ function BusRoutes() {
   </div>;
 }
 
+/* One pinned icon per specific card rather than the section as a whole —
+   `undefined` for cards that don't get one. `left` puts it just outside the
+   circle's own footprint on the card's left edge; `right` mirrors that. */
+const FACILITY_PINS: Record<number, { file: string; side: 'left' | 'right' }> = {
+  1: { file: 'laptop-svgrepo-com.svg', side: 'right' }, // Smart Classrooms
+  2: { file: 'books-svgrepo-com.svg', side: 'left' }, // CBSE
+  3: { file: 'books-svgrepo-com.svg', side: 'right' }, // IIT-JEE
+};
+
+/* Lion, football (physical-education) and painting (paint-palette) sit in
+   the empty centre gutter between the two grid columns rather than pinned to
+   an edge — `left-1/2 -translate-x-1/2` centres each on the grid's own
+   midline, which is also the screen's horizontal centre since the grid is
+   itself centred (`mx-auto` inside `container-wide`). A small random jitter
+   on the left offset keeps the three from lining up in a rigid column. */
+function centreJitterPct() {
+  return Math.random() * 10 - 5;
+}
+
 function Facilities() {
-  return <section id="media" className="py-5 md:py-7"><div className="container-wide">
+  return <section id="media" className="relative py-5 md:py-7">
+    <PinnedIcon file="lion-svgrepo-com.svg" className="left-1 top-[24%] md:left-3" widthRem={3.5} />
+    <div className="container-wide">
     <Heading accent="Facilities" />
-    <div className="mx-auto mt-8 grid max-w-[900px] grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-10 sm:gap-y-12">
+    <div className="relative mx-auto mt-8 grid max-w-[900px] grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-10 sm:gap-y-12">
+      {/* Centred via `margin-left: calc(...)` rather than the usual
+          `-translate-x-1/2` utility — the float animation drives `transform`
+          itself, which would replace (not add to) a transform-based offset
+          the moment the animation is actually running. */}
+      <PinnedIcon file="physical-education-svgrepo-com.svg" className="top-[42%] left-1/2" widthRem={3.5} style={{ marginLeft: `calc(-1.75rem + ${centreJitterPct()}%)` }} />
+      <PinnedIcon file="paint-palette-palette-svgrepo-com.svg" className="top-[78%] left-1/2" widthRem={3.5} style={{ marginLeft: `calc(-1.75rem + ${centreJitterPct()}%)` }} />
       {/* Not a flex wrapper: `GalleryOrb`'s own figure needs to be a normal
           block box so its `w-full` button resolves against the full column
           width — inside a flex parent with `items-center` it would shrink to
           content instead and the orb would render tiny. */}
-      {facilities.map(({ image, contain, title, copy }, index) => <div key={title} className="reveal text-center" data-testid={`card-facility-${index + 1}`}>
-        <GalleryOrb src={image!} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} contain={contain} />
-        <h3 className="mt-4 font-sans text-[14px] font-medium leading-[1.25] text-black sm:text-[19px] sm:leading-snug">{title}</h3>
-        <p className="mt-1.5 mx-auto max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[13.5px] sm:leading-[1.5]">{copy}</p>
-      </div>)}
+      {facilities.map(({ image, contain, title, copy }, index) => {
+        const pin = FACILITY_PINS[index];
+        return <div key={title} className="reveal relative text-center" data-testid={`card-facility-${index + 1}`}>
+          {pin && <PinnedIcon file={pin.file} className={`top-1/2 ${pin.side === 'left' ? '-left-4 md:-left-8' : '-right-4 md:-right-8'}`} widthRem={4} style={{ marginTop: '-2rem' }} />}
+          <GalleryOrb src={image!} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} contain={contain} />
+          <h3 className="mt-4 font-sans text-[14px] font-medium leading-[1.25] text-black sm:text-[19px] sm:leading-snug">{title}</h3>
+          <p className="mt-1.5 mx-auto max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[13.5px] sm:leading-[1.5]">{copy}</p>
+        </div>;
+      })}
     </div>
   </div></section>;
 }
@@ -557,8 +632,8 @@ function GalleryOrb({ src, alt, colour, spin, caption, contain = false }: { src:
   </figure>;
 }
 
-function GalleryOrbs({ images, label, className = 'grid-cols-2 md:grid-cols-3' }: { images: readonly string[]; label: string; className?: string }) {
-  return <div className={`grid gap-x-6 gap-y-9 ${className}`}>
+function GalleryOrbs({ images, label, className = 'grid-cols-2 md:grid-cols-3', gapClassName = 'gap-x-6 gap-y-9' }: { images: readonly string[]; label: string; className?: string; gapClassName?: string }) {
+  return <div className={`grid ${gapClassName} ${className}`}>
     {images.map((src, index) => <GalleryOrb key={`${src}-${index}`} src={src} alt={`${label} ${index + 1}`} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} />)}
   </div>;
 }
@@ -589,10 +664,18 @@ function StoryVideo() {
 }
 
 /* `heading` off when the page above already carries the title as its `h1`. */
+/* Video beside a 3-column, 2-row orb grid (six photos), the whole block
+   left-aligned within `container-wide` (no `mx-auto`) rather than centred,
+   so it sits toward the left of the screen. */
 function Gallery({ heading = true }: { heading?: boolean }) {
-  return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><div className="container-wide">{heading && <Heading title="PHOTO" accent="GALLERY" />}<div className="mx-auto mt-7 grid max-w-[1120px] items-center gap-8 md:grid-cols-[210px_1fr]">
-    <div className="reveal relative mx-auto w-full max-w-[210px] overflow-hidden rounded-2xl border-[5px] border-white bg-[#123A5E] shadow-[0_10px_26px_rgba(31,40,56,.2)]"><div className="relative aspect-[9/16] overflow-hidden rounded-xl"><StoryVideo /></div></div>
-    <GalleryOrbs images={gallery} label="School life gallery" />
+  return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><PinnedIcon file="cricket-svgrepo-com.svg" className="right-1 top-[55%] md:right-3" widthRem={3.5} /><div className="container-wide">{heading && <Heading title="PHOTO" accent="GALLERY" />}<div className="mt-7 grid max-w-[1000px] items-start gap-3 md:grid-cols-[210px_1fr]">
+    <div className="reveal relative mt-10 w-full max-w-[210px] overflow-hidden rounded-2xl border-[5px] border-white bg-[#123A5E] shadow-[0_10px_26px_rgba(31,40,56,.2)]"><div className="relative aspect-[9/16] overflow-hidden rounded-xl"><StoryVideo /></div></div>
+    {/* Fixed 250px columns instead of `1fr` ones — the orb itself is
+        capped at 250px, so a stretchy column left a lot of empty slack
+        between circles even with a tight `gap`. Fixed columns plus
+        `justify-center` mean `gapClassName` is finally the whole visible
+        gap. */}
+    <GalleryOrbs images={gallery} label="School life gallery" className="grid-cols-[repeat(3,250px)] justify-center" gapClassName="gap-x-2 gap-y-6" />
   </div></div></section>;
 }
 
@@ -607,7 +690,7 @@ function Testimonials() {
     const timer = window.setInterval(() => setActive(current => (current + 1) % testimonials.length), 7000);
     return () => window.clearInterval(timer);
   }, [paused, testimonials.length]);
-  return <section id="blogs" className="py-5 md:py-7"><div className="container-wide"><Heading title="Parent Say" accent="About us" /><div className="relative mx-auto mt-6 max-w-[760px] px-7 text-center sm:px-14" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} aria-roledescription="carousel" aria-live="polite"><Quote className="absolute left-0 top-0 h-7 w-7 text-[#0F4C5C] sm:h-10 sm:w-10" fill="currentColor" /><Quote className="absolute right-0 top-0 h-7 w-7 rotate-180 text-[#0F4C5C] sm:h-10 sm:w-10" fill="currentColor" /><div key={active} className="testimonial-fade"><blockquote className="whitespace-pre-line text-[16px] leading-[1.55] text-black" data-testid="text-testimonial">{testimonial.quote}</blockquote><p className="mt-4 text-right text-[18px] font-semibold text-[#0F4C5C]" data-testid="text-testimonial-name">{testimonial.name}</p></div><div className="absolute -right-2 bottom-4 hidden h-20 w-14 rounded-[50%] bg-gradient-to-br from-[#0F4C5C] via-white to-[#1F2838] md:block" /></div></div></section>;
+  return <section id="blogs" className="py-5 md:py-7"><div className="container-wide"><Heading title="Parent Say" accent="About us" /><div className="relative mx-auto mt-6 max-w-[760px] px-7 text-center sm:px-14" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} aria-roledescription="carousel" aria-live="polite"><Quote className="absolute left-0 top-0 h-7 w-7 text-[#0F4C5C] sm:h-10 sm:w-10" fill="currentColor" /><Quote className="absolute right-0 top-0 h-7 w-7 rotate-180 text-[#0F4C5C] sm:h-10 sm:w-10" fill="currentColor" /><div key={active} className="testimonial-fade"><blockquote className="whitespace-pre-line text-[16px] leading-[1.55] text-black" data-testid="text-testimonial">{testimonial.quote}</blockquote><p className="mt-4 text-right text-[18px] font-semibold text-[#0F4C5C]" data-testid="text-testimonial-name">{testimonial.name}</p></div><PinnedIcon file="earth-svgrepo-com.svg" className="-right-9 bottom-6 md:-right-16 md:bottom-8" widthRem={3.5} /><div className="absolute -right-2 bottom-4 hidden h-20 w-14 rounded-[50%] bg-gradient-to-br from-[#0F4C5C] via-white to-[#1F2838] md:block" /></div></div></section>;
 }
 
 function Admissions({ onEnquire }: { onEnquire: () => void }) {
